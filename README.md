@@ -6,3 +6,9 @@ horizons even further.
 Through Stovehub professional Chefs can also advertise themselves, their biographies and their recipies to the public.
 Furthermore, Stovehub makes organizing group cookouts easy! Through the chat feature,voting and the group basket users can decide what they would like to cook!
 Join Stovehub now, and allow yourself to be lost in the culinary world!
+
+
+Technologies Used:
+Front-End Development: React.JS/Javascript
+Back-End Development: Node.JS
+Database: MySQL
