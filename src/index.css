@@ -1,0 +1,111 @@
+.navbar{
+  display: flex;
+  justify-content: space-between;
+}
+
+.navbar-right{
+  display: flex;
+  justify-content: space-between;
+}
+
+.navbar-center{
+  display: flex;
+  justify-content: space-between;
+  width: 160px;
+}
+
+.navbar-left{
+  display: flex;
+  justify-content: space-between;
+  width: 220px;
+}
+
+.navbar-logo{
+  
+  width: 90px;
+  height: 90px;
+  cursor: pointer;
+}
+
+.navbar-search{
+  margin-top: 15px;
+  width: 60px;
+  height: 60px;
+  cursor: pointer;
+}
+
+.navbar-home{
+  margin-top: 10px;
+  width: 60px;
+  height: 60px;
+  cursor: pointer;
+}
+
+.navbar-gallery{
+  margin-top: 10px;
+  width: 60px;
+  height: 60px;
+  cursor: pointer;  
+}
+
+.navbar-notifications{
+  margin-top: 10px;
+  margin-right: 5px;
+  width: 60px;
+  height: 60px;
+  cursor: pointer;  
+}
+
+.navbar-cart{
+  margin-top: 10px;
+  margin-right: 5px;
+  margin-left: 5px;
+  width: 60px;
+  height: 60px;
+  cursor: pointer;  
+}
+
+.navbar-profile{
+  margin-top: 10px;
+  margin-left: 5px;
+  width: 60px;
+  height: 60px;
+  cursor: pointer;  
+}
+
+.chatbar-chatimg{
+  width: 80px;
+  height: 80px;
+  cursor: pointer;
+}
+
+.chatbar{
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: auto;
+  height:auto;
+  scrollbar-width: none;
+}
+
+.lowerdiv{
+  padding: 0;
+  max-height: 800px;
+  display: flex;
+  justify-content: space-between;
+}
+
+.add-post-button{
+  position: relative;
+  width: 80px;
+  height: 80px;
+  cursor: pointer;
+}
+
+.homepage{
+  margin: 0;
+  width: auto;
+  height: auto;
+  overflow: auto;
+}
+.app{}
