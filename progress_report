@@ -1,0 +1,34 @@
+This file contains the team's current progress and labor division.
+
+1. Navigation Bar
+  {
+  1.LogoButton
+  2.HomeButton
+  3.GalleryButton [@alexandermustaqi]
+  4.NotificationButton
+  5.CartButton
+  6.ProfileButton
+  }
+2. Chat menu [@alexandermustaqi]
+  {
+  1.Single-Person Chat
+  2.Group Chat
+  3.Voting
+  4.Group Basket
+  }
+3. HomePage
+4. Posts
+  {
+  1. Post Recipe
+  2. Enter Recipe
+  3. Rate Recipe
+  4. Comment on Recipe
+  5. Nutrinional Value/Caloric amount of Recipe (https://calorieninjas.com/ API) 
+  }
+5. ProfilePage
+  {
+  1. Edit Profile
+  2. Add/Remove Profile to follower list
+  3. Check Profile Recipies
+  }
+6. Build Database (MySQL) [@alexandermustaqi]
