@@ -1,3 +1,4 @@
+import React from 'react';
 import Navbar from "./Navbar/Navbar.jsx";
 import ChatsBar from "./ChatsBar/ChatsBar.jsx";
 import AddPostButton from './AddPostButton/AddPostButton.jsx'
