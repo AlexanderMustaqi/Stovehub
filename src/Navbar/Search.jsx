@@ -1,12 +1,16 @@
+import React from 'react';
 import SearchIcon from "./assets/search-outline.svg"
 
-function Search() {
-
-    return(
-        <>
-            <img src={SearchIcon} alt="Search" className="navbar-search"/>
-        </>
+function Search({ onClick }) {
+    return (
+      <img
+        src={SearchIcon}
+        alt="Search"
+        className="navbar-search"
+        style={{ cursor: 'pointer' }}
+        onClick={onClick}
+      />
     );
-}
+  }
 
 export default Search;

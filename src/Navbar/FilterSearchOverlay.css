@@ -1,0 +1,109 @@
+.filter-overlay {
+    position: fixed;
+    inset: 0;
+    background-color: rgba(0, 0, 0, 0.6);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+    backdrop-filter: blur(3px); /* Προσθέτει ένα ελαφρύ blur */
+  }
+  
+  .filter-panel {
+    background: #ffffff;
+    border-radius: 16px;
+    padding: 32px 24px;
+    width: 90%;
+    max-width: 480px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+    position: relative;
+    animation: fadeIn 0.3s ease-out;
+  }
+  
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  .close-btn {
+    position: absolute;
+    top: 12px;
+    right: 16px;
+    background: none;
+    border: none;
+    font-size: 1.8rem;
+    color: #666;
+    cursor: pointer;
+    transition: color 0.2s;
+  }
+  .close-btn:hover {
+    color: #000;
+  }
+  
+  .filter-panel h2 {
+    font-size: 1.5rem;
+    margin-bottom: 16px;
+    text-align: center;
+    color: #333;
+  }
+  
+  input[type="text"],
+  select {
+    width: 90%;
+    padding: 10px 14px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 1rem;
+    background: #f9f9f9;
+    transition: border 0.2s;
+  }
+  input[type="text"]:focus,
+  select:focus {
+    border-color: #007bff;
+    outline: none;
+  }
+  
+  .filters {
+    display: grid;
+    gap: 12px;
+    margin: 20px 0;
+  }
+  
+  .actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    margin-top: 16px;
+  }
+  
+  .btn-primary {
+    padding: 10px 18px;
+    background: #007bff;
+    color: #fff;
+    border: none;
+    font-weight: bold;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  .btn-primary:hover {
+    background: #0056b3;
+  }
+  
+  .btn-secondary {
+    padding: 10px 18px;
+    background: #e0e0e0;
+    color: #c51313;
+    border: none;
+    font-weight: bold;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.2s;
+  }      
+  
