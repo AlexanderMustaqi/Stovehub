@@ -119,7 +119,7 @@ function SearchResultsPage() {
           key={post.id} // Βεβαιώσου ότι το post.id είναι μοναδικό
           post={{
             ...post,
-            imageUrl: `http://localhost:3001${post.image_url}`,
+            imageUrl: `http://localhost:5000${post.image_url}`,
             // Αυτά τα πεδία (commentCount, comments) θα πρέπει ιδανικά να έρχονται από το API
             commentCount: post.commentCount || 0,
             comments: post.comments || []

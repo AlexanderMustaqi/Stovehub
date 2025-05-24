@@ -28,7 +28,7 @@ function HomePage() {
           key={post.id}
           post={{
             ...post,
-            imageUrl: `http://localhost:3001${post.image_url}`,
+            imageUrl: `http://localhost:5000${post.image_url}`,
             commentCount: 0,
             comments: []
           }}

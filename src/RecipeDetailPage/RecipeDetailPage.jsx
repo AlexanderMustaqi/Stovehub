@@ -69,7 +69,7 @@ function RecipeDetailPage() {
       <Link to="/" className="back-link">← Επιστροφή στην Αρχική</Link>
       {recipe.image_url && (
         <div className="recipe-image-full-container">
-          <img src={`http://localhost:3001${recipe.image_url}`} alt={recipe.title} className="recipe-image-full" />
+          <img src={`http://localhost:5000${recipe.image_url}`} alt={recipe.title} className="recipe-image-full" />
         </div>
       )}
       <h1 className="recipe-title-full">{recipe.title}</h1>

@@ -88,7 +88,7 @@ function AddPostModal({ visible, onClose, onSubmit }) {
     if (image) form.append('image', image);
 
     try {
-      await axios.post('http://localhost:3001/api/posts', form, {
+      await axios.post('http://localhost:5000/api/posts', form, {
         headers: { 'Content-Type': 'multipart/form-data' }
       });
       alert('Η συνταγή αποθηκεύτηκε!');
