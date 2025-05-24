@@ -1,0 +1,42 @@
+.chatradio{
+    appearance: none;
+    width: 60px;
+    height: 80px;
+    background-color: aqua;
+    border-radius: 50%;
+    cursor: pointer;
+    margin-bottom: 10px;
+    transition: 0.5s;
+}
+
+.chatradio:hover{
+    transform: scale(1.2, 1.2);
+}
+
+.chatradio:checked{
+    background-color: red;
+}
+
+.chat{
+    height: 800px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.txt{
+    border: 1px solid black;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100px;
+    width: 280px;
+    border-radius: 20%;
+    background-color: bisque;
+}
+
+.radios{
+    display: flex;
+    flex-direction: column;
+}
