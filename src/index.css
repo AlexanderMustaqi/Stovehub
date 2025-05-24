@@ -34,6 +34,11 @@
   cursor: pointer;
 }
 
+.navbar-search:hover{
+  border-radius: 16px;
+  box-shadow: 0 15px 6px rgba(0, 0, 0, 0.2);
+}
+
 .navbar-home{
   margin-top: 10px;
   width: 60px;

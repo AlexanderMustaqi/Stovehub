@@ -9,6 +9,8 @@ function Search({ onClick }) {
         className="navbar-search"
         style={{ cursor: 'pointer' }}
         onClick={onClick}
+        role="button"
+        tabIndex="0"
       />
     );
   }

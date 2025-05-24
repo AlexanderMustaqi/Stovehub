@@ -4,15 +4,22 @@ import './HomePage.css';
 import api from '../api/api'; 
 
 
-
+// Αν η HomePage προορίζεται μόνο για την εμφάνιση όλων των posts, δεν χρειάζεται το prop 'filters'
 function HomePage() {
   const [posts, setPosts] = useState([]);
 
   useEffect(() => {
-    api.get('/posts')
-      .then(res => setPosts(res.data))
-      .catch(err => console.error('Σφάλμα στο fetch:', err));
-  }, []);
+    const fetchAllPosts = async () => {
+      try {
+        // console.log("[HomePage] Fetching all posts"); // Μπορεί να ενεργοποιηθεί για debugging
+        const res = await api.get('/posts'); // Πάντα φορτώνει όλα τα posts
+        setPosts(res.data);
+      } catch (err) {
+        console.error('[HomePage] Σφάλμα στο fetch όλων των posts:', err);
+      }
+    };
+    fetchAllPosts();
+  }, []); // Κενό dependency array, εκτελείται μία φορά κατά το mount
 
   return (
     <div className="home-page">
@@ -21,9 +28,9 @@ function HomePage() {
           key={post.id}
           post={{
             ...post,
-            imageUrl: `http://localhost:3001${post.image_url}`, // κάνουμε resolve την εικόνα
+            imageUrl: `http://localhost:3001${post.image_url}`,
             commentCount: 0,
-            comments: [] // placeholder, εκτός αν φέρνεις και σχόλια
+            comments: []
           }}
         />
       ))}
