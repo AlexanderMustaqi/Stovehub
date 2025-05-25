@@ -25,6 +25,9 @@ function App() {
                         <Route exact path='/home'>
                             <Home></Home>
                         </Route>
+                        <Route exact path='/guest_home'> 
+                            {/* <Guest></Guest> */}
+                        </Route>
                         <Route exact path='/profile'>
                             <ProfilePage></ProfilePage>
                         </Route>

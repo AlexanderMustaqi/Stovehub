@@ -1,5 +1,5 @@
 import { useState,useRef, useEffect, useContext } from "react"
-import { useHistory, Link } from 'react-router-dom'
+import { useHistory } from 'react-router-dom'
 import { UserUpdateContext } from '../App.jsx'
 import api from "../api/api";
 
@@ -14,7 +14,7 @@ const lrwin = {
     display: 'flex',
     flexDirection: 'column',
     justifyContent: 'center',
-    alignItems: 'center',
+    alignItems: 'center',   
     width: '300px',
     border: '2px solid black',
     borderRadius: '10%',
