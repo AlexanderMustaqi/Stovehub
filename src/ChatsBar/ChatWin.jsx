@@ -1,5 +1,4 @@
-import React, { createContext, useContext, useEffect, useRef, useState } from 'react'
-import api from '../api/api'
+import { createContext, useContext, useEffect, useRef, useState } from 'react'
 import ChatVote from './ChatVote';
 import ChatInput from './ChatInput';
 import ChatMessage from './ChatMessage';

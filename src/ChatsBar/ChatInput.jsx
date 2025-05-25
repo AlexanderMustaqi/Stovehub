@@ -1,8 +1,6 @@
-import { Server } from 'ws';
-import api from '../api/api'
 import { useWebSocket } from './ChatWin';
 import { IdContext } from './ChatsBar'
-import React, { useContext, useEffect, useRef, useState } from 'react';
+import React, { useContext, useRef } from 'react';
 
 function ChatInput({chat_id : chat_id, setTrigger: setTrigger}) {
 

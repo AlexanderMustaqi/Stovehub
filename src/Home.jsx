@@ -2,8 +2,6 @@ import Navbar from "./Navbar/Navbar.jsx";
 import ChatsBar from "./ChatsBar/ChatsBar.jsx";
 import AddPostButton from './AddPostButton/AddPostButton.jsx'
 import HomePage from './HomePage/HomePage.jsx'
-import { useState } from "react";
-
 
 function Home() {
 
