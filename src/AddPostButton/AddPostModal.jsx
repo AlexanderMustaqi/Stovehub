@@ -2,6 +2,10 @@ import React, { useState, useRef } from 'react';
 import './AddPostModal.css';
 import axios from 'axios';
 
+
+const userEmail = sessionStorage.getItem('email');
+
+
 function AddPostModal({ visible, onClose, onSubmit }) {
   const fileInputRef = useRef(null);
   const [title, setTitle] = useState('');
