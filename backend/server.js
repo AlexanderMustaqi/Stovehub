@@ -188,17 +188,33 @@ app.get(`/api/profile_info/:email`, async (req,res) => {
   }
 })
 
-//GET profile_recipies
-app.get(`/api/profile_recipies/:email`, async (req, res) => {
-  const email = req.params.email;
+//GET galleries
+app.get('/api/galleries/:id' , async (req, res) => {
+  const id = req.params.id;
 
+  //getting galleries
   try {
-    result = await pool.query(`select * from recipe join user_base on user_base.user_id = recipe.user_id where email="${email}"`);
+    result = await pool.query(`select * from gallery where user_id = ${id}`);
     res.json(JSON.stringify(result[0]));
   }
-  catch (err) {
+  catch(err) {
     res.status(500);
-    throw err;
+    throw err
+  }
+})
+
+//GET recipies for gallery
+app.get(`/api/recipes/:id` , async (req, res) => {
+  const gallery_id = req.params.id;
+
+  try {
+    result = await pool.query(`select * from gal_rec 
+                                join recipes on gal_rec.recipe_id = recipes.id
+                                  where gallery_id=${gallery_id}`);
+  }
+  catch(err) {
+    res.status(500);
+    throw err
   }
 })
 
