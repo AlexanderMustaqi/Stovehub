@@ -1,12 +1,14 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react'; // Προσθήκη useContext
 import { useLocation } from 'react-router-dom';
 import PostCard from '../HomePage/PostCard'; // Προσαρμογή διαδρομής αν χρειάζεται
 import '../HomePage/HomePage.css'; // Χρήση ίδιων στυλ ή δημιουργία νέων
 import api from '../api/api';
+import { IdContext } from '../ChatsBar/ChatsBar'; // Υποθέτουμε ότι αυτό είναι το σωστό Context
 
 function SearchResultsPage() {
   const [posts, setPosts] = useState([]);
   const location = useLocation(); // Για πρόσβαση στις παραμέτρους URL
+  const currentUserId = useContext(IdContext); // Λήψη του currentUserId
 
   useEffect(() => {
     const controller = new AbortController(); // Δημιουργία AbortController
@@ -63,6 +65,10 @@ function SearchResultsPage() {
         if (shouldUseSearchEndpoint) {
           url = (activeFilters.type === 'users') ? '/users/search' : '/posts/search'; // Παράδειγμα για users
           if (paramsForApi.toString()) {
+            // Προσθήκη userId στις παραμέτρους αν υπάρχει και ψάχνουμε για recipes
+            if (activeFilters.type === 'recipes' && currentUserId) {
+              paramsForApi.append('userId', currentUserId);
+            }
             url += `?${paramsForApi.toString()}`;
           }
         } else {
@@ -97,7 +103,7 @@ function SearchResultsPage() {
     return () => {
       controller.abort();
     };
-  }, [location.search]); // Επαναφόρτωση όταν αλλάζουν οι παράμετροι URL
+  }, [location.search, currentUserId]); // Επαναφόρτωση όταν αλλάζουν οι παράμετροι URL ή το currentUserId
 
   if (posts.length === 0 && location.search) {
     return (
@@ -120,9 +126,9 @@ function SearchResultsPage() {
           post={{
             ...post,
             imageUrl: `http://localhost:5000${post.image_url}`,
-            // Αυτά τα πεδία (commentCount, comments) θα πρέπει ιδανικά να έρχονται από το API
-            commentCount: post.commentCount || 0,
-            comments: post.comments || []
+            // Προσαρμογή για να είναι συνεπές με το HomePage.jsx
+            commentCount: post.comment_count || 0, // Χρησιμοποιούμε comment_count όπως στο HomePage
+            comments: [] // Περιττό να περνάμε τα comments εδώ, όπως και στο HomePage
           }}
         />
       ))}

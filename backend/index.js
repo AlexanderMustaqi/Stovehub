@@ -112,6 +112,7 @@ app.get('/', (req, res) => {
 // GET user_id
 app.get('/api/user_id/:email', async (req, res) => {
   const email = req.params.email;
+  console.log(`[Backend] Attempting to fetch chats for email: ${email}`);
 
   try {
     const [rows] = await pool.query(`select user_id from user_base where email = ?`, [email]); // Using prepared statement
@@ -147,13 +148,14 @@ app.get('/api/chats/:email', async (req, res) => {
       return res.status(404).send('User not found');
     }
     const user_id = userRows[0]['user_id'];
-    const [chatRows] = await pool.query(`select chat.chat_id, chat.chat_name from chat
+    // Assuming the chat name column in 'chat' table is 'name'. If not, adjust or remove 'chat.name AS chat_name'.
+    const [chatRows] = await pool.query(`select chat.chat_id, chat.name AS chat_name from chat
                                 left join chat_user on chat.chat_id = chat_user.chat_id
                                   where chat_user.user_id = ?;`, [user_id]); // Using prepared statement
     res.json(chatRows);
   } catch (err) {
     console.error("Error fetching chats:", err);
-    res.status(500).send('DB Error');
+    res.status(500).send('DB Error'); // Βεβαιώσου ότι αυτό παραμένει για τη σωστή διαχείριση σφαλμάτων
   }
 });
 
@@ -320,97 +322,285 @@ app.get('/api/getAuth/:user', async (req, res) => {
   }
 });
 
+// --- ENDPOINTS FOR RECIPE REACTIONS ---
+app.post('/api/recipes/:recipeId/react', async (req, res) => {
+  const recipeId = parseInt(req.params.recipeId, 10);
+  const { userId, reactionType } = req.body; // reactionType: 'like', 'dislike', or 'none' to remove
+
+  if (isNaN(recipeId) || !userId || !reactionType) {
+    return res.status(400).json({ message: 'Recipe ID, User ID, and Reaction Type are required.' });
+  }
+
+  try {
+    const [existingReactions] = await pool.query(
+      'SELECT id, reaction FROM recipe_reactions WHERE recipe_id = ? AND user_id = ?',
+      [recipeId, userId]
+    );
+
+    if (existingReactions.length > 0) {
+      const existingReaction = existingReactions[0];
+      if (reactionType === 'none' || existingReaction.reaction === reactionType) {
+        await pool.query('DELETE FROM recipe_reactions WHERE id = ?', [existingReaction.id]);
+        res.status(200).json({ message: 'Reaction removed.' });
+      } else {
+        await pool.query(
+          'UPDATE recipe_reactions SET reaction = ?, created_at = CURRENT_TIMESTAMP WHERE id = ?',
+          [reactionType, existingReaction.id]
+        );
+        res.status(200).json({ message: 'Reaction updated.' });
+      }
+    } else {
+      if (reactionType === 'like' || reactionType === 'dislike') {
+        await pool.query(
+          'INSERT INTO recipe_reactions (recipe_id, user_id, reaction) VALUES (?, ?, ?)',
+          [recipeId, userId, reactionType]
+        );
+        res.status(201).json({ message: 'Reaction added.' });
+      } else {
+        res.status(200).json({ message: 'No action taken for reaction type "none".' });
+      }
+    }
+  } catch (err) {
+    console.error(`Error processing reaction for recipe ${recipeId}:`, err);
+    if (err.code === 'ER_NO_REFERENCED_ROW_2' || err.code === 'ER_NO_REFERENCED_ROW') {
+        return res.status(404).json({ message: 'Recipe or User not found.' });
+    }
+    res.status(500).json({ message: 'Server error while processing reaction.' });
+  }
+});
+
+// --- ENDPOINTS FOR RECIPE COMMENTS ---
+app.get('/api/recipes/:recipeId/comments', async (req, res) => {
+  const recipeId = parseInt(req.params.recipeId, 10);
+
+  if (isNaN(recipeId)) {
+    return res.status(400).json({ message: 'Invalid Recipe ID.' });
+  }
+
+  try {
+    const [comments] = await pool.query(
+      `SELECT rc.comment_id, rc.comment_text, rc.created_at, 
+              u.user_id, u.username, u.profile_image_url 
+       FROM recipe_comments rc
+       JOIN user_base u ON rc.user_id = u.user_id
+       WHERE rc.recipe_id = ?
+       ORDER BY rc.created_at DESC`,
+      [recipeId]
+    );
+    res.json(comments);
+  } catch (err) {
+    console.error(`Error fetching comments for recipe ${recipeId}:`, err);
+    res.status(500).json({ message: 'Server error while fetching comments.' });
+  }
+});
+
+app.post('/api/recipes/:recipeId/comments', async (req, res) => {
+  const recipeId = parseInt(req.params.recipeId, 10);
+  const { userId, commentText } = req.body; // Αφαίρεσα το parentCommentId για απλότητα προς το παρόν
+
+  if (isNaN(recipeId) || !userId || !commentText || commentText.trim() === '') {
+    return res.status(400).json({ message: 'Recipe ID, User ID, and Comment Text are required.' });
+  }
+
+  try {
+    const [result] = await pool.query(
+      'INSERT INTO recipe_comments (recipe_id, user_id, comment_text) VALUES (?, ?, ?)',
+      [recipeId, userId, commentText.trim()]
+    );
+    const [newCommentRows] = await pool.query(
+      `SELECT rc.comment_id, rc.comment_text, rc.created_at,
+              u.user_id, u.username, u.profile_image_url 
+       FROM recipe_comments rc
+       JOIN user_base u ON rc.user_id = u.user_id
+       WHERE rc.comment_id = ?`,
+      [result.insertId]
+    );
+    res.status(201).json(newCommentRows[0]);
+  } catch (err) {
+    console.error(`Error posting comment for recipe ${recipeId}:`, err);
+    if (err.code === 'ER_NO_REFERENCED_ROW_2' || err.code === 'ER_NO_REFERENCED_ROW') {
+        return res.status(404).json({ message: 'Recipe or User not found for comment.' });
+    }
+    res.status(500).json({ message: 'Server error while posting comment.' });
+  }
+});
+
 // Endpoints from the first file (Recipes) - Refactored to use async/await with pool
 
 // POST /api/posts
-app.post('/api/posts', upload.single('image'), (req, res) => {
-  const { title, description, difficulty, prep_time_value, prep_time_unit, category, ingredients } = req.body;
+app.post('/api/posts', upload.single('image'), async (req, res) => { // Changed to async
+  // Βεβαιώσου ότι το userEmail λαμβάνεται σωστά από το req.body
+  const { title, description, difficulty, prep_time_value, prep_time_unit, category, ingredients, userEmail } = req.body; 
   const imageUrl = req.file ? `/uploads/${req.file.filename}` : null;
-  pool.query( // Using pool.query
-    `INSERT INTO recipes (title, description, difficulty, prep_time_value, prep_time_unit, category, ingredients, image_url) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
-    [title, description, difficulty, prep_time_value, prep_time_unit, category, ingredients, imageUrl]
-  )
-  .then(() => res.status(201).send('OK')) // Send 201 for resource creation
-  .catch(err => {
+
+  if (!userEmail) { // Έλεγχος αν το userEmail στάλθηκε
+    return res.status(400).send('User email is required to create a post.');
+  }
+
+  try {
+    // Βρες το user_id από το userEmail
+    const [userRows] = await pool.query('SELECT user_id, username FROM user_base WHERE email = ?', [userEmail]);
+    if (userRows.length === 0) {
+      console.log(`[Backend POST /api/posts] User not found for email: ${userEmail}`);
+      return res.status(404).send('User not found. Cannot create post.');
+    }
+    const userId = userRows[0].user_id;
+    const username = userRows[0].username; // Ανάκτηση του username
+    console.log(`[Backend POST /api/posts] Found userId: ${userId}, username: ${username} for email: ${userEmail}`);
+
+    // Εισαγωγή της συνταγής με το user_id
+    await pool.query(
+      `INSERT INTO recipes (title, description, difficulty, prep_time_value, prep_time_unit, category, ingredients, image_url, user_id, posted_by) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      [title, description, difficulty, prep_time_value, prep_time_unit, category, ingredients, imageUrl, userId, username]
+    );
+    res.status(201).json({ message: 'Recipe created successfully', userId: userId, posted_by: username });
+  } catch (err) {
     console.error("Error inserting recipe:", err);
-    res.status(500).send('Error');
-  });
+    res.status(500).send('Error creating recipe');
+  }
 });
 
 // GET /api/posts
 app.get('/api/posts', async (req, res) => {
+  const currentUserId = req.query.userId ? parseInt(req.query.userId, 10) : null;
   try {
-    const [rows] = await pool.query('SELECT * FROM recipes ORDER BY created_at DESC');
-    res.json(rows);
+    let sqlQuery = `
+      SELECT 
+        r.*, 
+        u.username AS posted_by,
+        u.profile_image_url AS author_image_url,
+        (SELECT COUNT(*) FROM recipe_reactions rr WHERE rr.recipe_id = r.id AND rr.reaction = 'like') AS likes_count,
+        (SELECT COUNT(*) FROM recipe_reactions rr WHERE rr.recipe_id = r.id AND rr.reaction = 'dislike') AS dislikes_count,
+        (SELECT COUNT(*) FROM recipe_comments rc WHERE rc.recipe_id = r.id) AS comment_count 
+    `;
+    const queryParams = [];
+    if (currentUserId) {
+      sqlQuery += `,
+        (SELECT rr_user.reaction FROM recipe_reactions rr_user WHERE rr_user.recipe_id = r.id AND rr_user.user_id = ?) AS current_user_reaction
+      `;
+      queryParams.push(currentUserId);
+    }
+    sqlQuery += `
+      FROM recipes r
+      LEFT JOIN user_base u ON r.user_id = u.user_id
+      ORDER BY r.created_at DESC
+    `;
+    const [rows] = await pool.query(sqlQuery, queryParams);
+    const results = rows.map(row => ({ ...row, likes_count: parseInt(row.likes_count) || 0, dislikes_count: parseInt(row.dislikes_count) || 0, comment_count: parseInt(row.comment_count) || 0 }));
+    res.json(results);
   } catch (err) {
     console.error("Error fetching recipes:", err);
-    res.status(500).send('Error');
+    res.status(500).send('Error fetching recipes');
   }
 });
 
 // GET /api/posts/search
-app.get('/api/posts/search', (req, res) => {
-  console.log("🔍 Search filters received:", req.query); // Debug log
-  
-  let sql = 'SELECT * FROM recipes WHERE 1=1';
+app.get('/api/posts/search', async (req, res) => { // Changed to async
+  const currentUserId = req.query.userId ? parseInt(req.query.userId, 10) : null;
+  console.log("🔍 Search filters received:", req.query, "Current User ID for search:", currentUserId);
+
+  let sql = `
+    SELECT 
+      r.*, 
+      u.username AS posted_by,
+      u.profile_image_url AS author_image_url,
+      (SELECT COUNT(*) FROM recipe_reactions rr_likes WHERE rr_likes.recipe_id = r.id AND rr_likes.reaction = 'like') AS likes_count,
+      (SELECT COUNT(*) FROM recipe_reactions rr_dislikes WHERE rr_dislikes.recipe_id = r.id AND rr_dislikes.reaction = 'dislike') AS dislikes_count,
+      (SELECT COUNT(*) FROM recipe_comments rc_count WHERE rc_count.recipe_id = r.id) AS comment_count
+      ${currentUserId ? ', (SELECT rr_user.reaction FROM recipe_reactions rr_user WHERE rr_user.recipe_id = r.id AND rr_user.user_id = ?) AS current_user_reaction' : ''}
+    FROM recipes r
+    LEFT JOIN user_base u ON r.user_id = u.user_id
+    WHERE 1=1`;
   const params = [];
+
+  // Αν υπάρχει currentUserId, είναι για το πρώτο '?' στο SELECT (για το current_user_reaction)
+  if (currentUserId) {
+    params.push(currentUserId);
+  }
 
   if (req.query.query) {
     const likeQuery = `%${req.query.query}%`;
-    sql += ' AND (title LIKE ? OR description LIKE ?)';
+    sql += ' AND (r.title LIKE ? OR r.description LIKE ?)'; // Προσθήκη alias 'r.'
     params.push(likeQuery, likeQuery);
   }
 
   if (req.query.category) {
-    sql += ' AND category = ?';
+    sql += ' AND r.category = ?'; // Προσθήκη alias 'r.'
     params.push(req.query.category);
   }
 
   if (req.query.difficulty) {
-    sql += ' AND difficulty = ?';
+    sql += ' AND r.difficulty = ?'; // Προσθήκη alias 'r.'
     params.push(req.query.difficulty);
   }
 
   if (req.query.prepTime) {
-    sql += ' AND prep_time_value <= ?';
+    sql += ' AND r.prep_time_value <= ?'; // Προσθήκη alias 'r.'
     params.push(parseInt(req.query.prepTime));
   }
 
   if (req.query.ingredients) {
-    sql += ' AND ingredients LIKE ?';
+    sql += ' AND r.ingredients LIKE ?'; // Προσθήκη alias 'r.'
     params.push(`%${req.query.ingredients}%`);
   }
 
-  sql += ' ORDER BY created_at DESC';
+  sql += ' ORDER BY r.created_at DESC'; // Προσθήκη alias 'r.'
 
-  console.log("📝 Final SQL:", sql, params); // Debug log
-
-  pool.query(sql, params) // Using pool.query with params
-    .then(([rows]) => {
-      console.log("✅ Found recipes:", rows.length);
-      res.json(rows);
-    })
-    .catch(err => {
-      console.error("🔥 Database error:", err);
-      res.status(500).send('DB Error');
-    });
+  // console.log("📝 Final SQL for search:", sql, "Parameters:", params); // Debug log
+  try {
+    const [rows] = await pool.query(sql, params);
+    console.log("✅ Found recipes by search:", rows.length);
+    const results = rows.map(row => ({ ...row, likes_count: parseInt(row.likes_count) || 0, dislikes_count: parseInt(row.dislikes_count) || 0, comment_count: parseInt(row.comment_count) || 0 }));
+    res.json(results);
+  } catch (err) {
+    console.error("🔥 Database error during search:", err); // It's crucial to inspect this 'err' object in the backend console
+    res.status(500).send('DB Error');
+  }
 });
 
 // GET /api/posts/:id (Για μία συνταγή)
-app.get('/api/posts/:id', (req, res) => {
+app.get('/api/posts/:id', async (req, res) => { // Έγινε async
   const recipeId = req.params.id;
-  pool.query('SELECT * FROM recipes WHERE id = ?', [recipeId]) // Using pool.query with placeholder
-    .then(([rows]) => {
-      if (rows.length === 0) {
-        return res.status(404).send('Recipe not found');
-      }
-      res.json(rows[0]); // Επιστροφή της μίας συνταγής
-    })
-    .catch(err => {
-      console.error("Error fetching recipe by ID:", err);
-      res.status(500).send('DB Error');
-    });
+  const currentUserId = req.query.userId ? parseInt(req.query.userId, 10) : null;
+
+  if (isNaN(parseInt(recipeId, 10))) {
+    return res.status(400).send('Invalid recipe ID.');
+  }
+
+  try {
+    let sqlQuery = `
+      SELECT 
+        r.*, 
+        u.username AS posted_by,
+        u.profile_image_url AS author_image_url,
+        (SELECT COUNT(*) FROM recipe_reactions rr WHERE rr.recipe_id = r.id AND rr.reaction = 'like') AS likes_count,
+        (SELECT COUNT(*) FROM recipe_reactions rr WHERE rr.recipe_id = r.id AND rr.reaction = 'dislike') AS dislikes_count,
+        (SELECT COUNT(*) FROM recipe_comments rc WHERE rc.recipe_id = r.id) AS comment_count
+    `;
+    const queryParams = [];
+    if (currentUserId) {
+      sqlQuery += `,
+        (SELECT rr_user.reaction FROM recipe_reactions rr_user WHERE rr_user.recipe_id = r.id AND rr_user.user_id = ?) AS current_user_reaction
+      `;
+      queryParams.push(currentUserId);
+    }
+    sqlQuery += `
+      FROM recipes r
+      LEFT JOIN user_base u ON r.user_id = u.user_id
+      WHERE r.id = ?
+    `;
+    queryParams.push(recipeId);
+    const [rows] = await pool.query(sqlQuery, queryParams);
+    if (rows.length === 0) return res.status(404).send('Recipe not found');
+    const recipe = { ...rows[0], likes_count: parseInt(rows[0].likes_count) || 0, dislikes_count: parseInt(rows[0].dislikes_count) || 0, comment_count: parseInt(rows[0].comment_count) || 0 };
+    res.json(recipe);
+  } catch (err) {
+    console.error("Error fetching recipe by ID with reactions/comments:", err);
+    res.status(500).send('DB Error');
+  }
 });
+
+//GET /api/posts/:postsId
 
 // στατικός φάκελος
 app.use('/uploads', express.static(path.join(process.cwd(), 'uploads'))); // Corrected path.join usage

@@ -71,11 +71,15 @@ function AddPostModal({ visible, onClose, onSubmit }) {
     fileInputRef.current.click();
   };
 
+  
+
   const handleSubmit = async () => {
     if (!title.trim() || !description.trim() || ingredients.length === 0 || !prepTime) {
       alert('Παρακαλώ συμπλήρωσε όλα τα υποχρεωτικά πεδία.');
       return;
     }
+
+    
 
     const form = new FormData();
     form.append('title', title);
@@ -85,6 +89,7 @@ function AddPostModal({ visible, onClose, onSubmit }) {
     form.append('prep_time_unit', timeUnit);
     form.append('category', category);
     form.append('ingredients', JSON.stringify(ingredients));
+    form.append('userEmail', userEmail);
     if (image) form.append('image', image);
 
     try {

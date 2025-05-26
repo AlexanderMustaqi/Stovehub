@@ -1,6 +1,6 @@
 .recipe-detail-page {
-  max-width: 800px;
-  width: 100%;
+  max-width: 1000px;
+  min-width: 800px;
   margin: 0 auto;
   width: fit-content;
   padding: 20px;
@@ -8,7 +8,7 @@
   border-radius: 8px;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
   box-sizing: border-box;
-  display: block;
+  
 }
 
 .recipe-detail-page .back-link {
@@ -23,17 +23,26 @@
 }
 
 .recipe-image-full-container {
-  width: 100%;
-  max-height: 400px; /* Προσαρμόστε ανάλογα */
+  width: 75%;
+  max-height: 700px; /* Προσαρμόστε ανάλογα */
   overflow: hidden;
   border-radius: 8px;
-  margin-bottom: 20px;
+  margin: 0 auto 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  scroll-snap-type: y mandatory;
+  
 }
 
 .recipe-image-full {
   width: 100%;
   height: auto;
   display: block;
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain; /* Διατήρηση αναλογιών εικόνας */
+  scroll-snap-align: start;
 }
 
 .recipe-title-full {
@@ -95,31 +104,7 @@
   margin-bottom: 8px;
 }
 
-/* Styles for Comments Section */
-.recipe-comments-section {
-  margin-top: 30px; /* Προσθέτει κενό πάνω από την ενότητα σχολίων */
-  padding-top: 20px;
-  border-top: 1px solid #e0e0e0; /* Διαχωριστική γραμμή από το υπόλοιπο περιεχόμενο */
-}
 
-/* Ο τίτλος "Σχόλια" θα πάρει το στυλ από το .recipe-section h2 */
-/* .recipe-comments-section h2 { ... } */
-
-.comment-form-placeholder,
-.comments-list-placeholder {
-  background-color: #f8f9fa; /* Ελαφρύ γκρι φόντο για τους placeholders */
-  padding: 15px;
-  border-radius: 5px;
-  margin-bottom: 20px;
-  border: 1px dashed #ced4da; /* Διακεκομμένο περίγραμμα για να δείχνει ότι είναι placeholder */
-}
-
-.comment-form-placeholder p,
-.comments-list-placeholder p {
-  margin: 0;
-  color: #6c757d; /* Πιο απαλό χρώμα για το κείμενο του placeholder */
-  font-style: italic;
-}
 
 /* Προαιρετικά: Στυλ για μελλοντική φόρμα σχολίων */
 /*
