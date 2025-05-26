@@ -149,9 +149,9 @@ app.get('/api/chats/:email', async (req, res) => {
     }
     const user_id = userRows[0]['user_id'];
     // Assuming the chat name column in 'chat' table is 'name'. If not, adjust or remove 'chat.name AS chat_name'.
-    const [chatRows] = await pool.query(`select chat.chat_id, chat.name AS chat_name from chat
+    const [chatRows] = await pool.query(`select chat.chat_id, chat.chat_name from chat
                                 left join chat_user on chat.chat_id = chat_user.chat_id
-                                  where chat_user.user_id = ?;`, [user_id]); // Using prepared statement
+                                  where chat_user.user_id = ${user_id};`); // Using prepared statement
     res.json(chatRows);
   } catch (err) {
     console.error("Error fetching chats:", err);
