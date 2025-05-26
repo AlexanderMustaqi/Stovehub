@@ -12,6 +12,7 @@ function Logo() {
                 <img className="navbar-logo" src={LogoIcon} alt="Stovehub" onClick={handleClickEvent} />
                 <hr />
             </>);
+
 }
 
 export default Logo;
