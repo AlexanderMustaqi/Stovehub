@@ -1,5 +1,5 @@
 import { useContext, useState } from 'react';
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import ProfileIcon from './assets/person-outline.svg'
 import { UserContext } from '../App';
 
@@ -7,6 +7,7 @@ function Profile() {
 
     const [popUpFlag, setpopUpFlag] = useState(false);
     const userType = useContext(UserContext);
+    const nav = useNavigate();
 
     const stylesheet1 = 
     {
@@ -34,7 +35,7 @@ function Profile() {
         borderRadius: "10%",
         padding: "10px",
         marginBottom: '5px',
-        width: "80%",
+        width: "100%",
         backgroundColor: "",
         textAlign: 'center',
         cursor: 'pointer',
@@ -46,6 +47,16 @@ function Profile() {
         setpopUpFlag(!popUpFlag)
     }
 
+    const handleProfileClicked = () => {
+        nav("/profile");
+    }
+    const handleLogOutClicked = () => {
+        nav("/");
+    }
+    const handleSettingsClicked = () => {
+        alert("Work in Progress");
+    }
+
     return(<>
             <img src={ProfileIcon} alt="Profile" className='navbar-profile' onClick={popUp}/>
             
@@ -53,13 +64,13 @@ function Profile() {
                <div style={stylesheet2}>
                     {(userType) ?
                     (<div style={stylesheet1}>
-                        <Link style={stylesheet3} to='profile'>Profile</Link>
-                        <Link style={stylesheet3} to='settings'>Settings</Link>
-                        <Link style={stylesheet3} to='/'>Logout</Link>
+                        <button style={stylesheet3} onClick={handleProfileClicked}>Profile</button>
+                        <button style={stylesheet3} onClick={handleSettingsClicked}>Settings</button>
+                        <button style={stylesheet3} onClick={handleLogOutClicked}>Logout</button>
                     </div>)
                     :
                     (<div style={stylesheet2}>
-                        <Link style={stylesheet3} to='/'>Logout</Link>
+                        <button style={stylesheet3} onClick={handleLogOutClicked}>Log In</button>
                     </div>)}
                 </div>
             )}

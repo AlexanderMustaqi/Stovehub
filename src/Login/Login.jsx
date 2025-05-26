@@ -1,5 +1,5 @@
 import { useState,useRef, useEffect, useContext } from "react"
-import { useHistory } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom';
 import { UserUpdateContext } from '../App.jsx'
 import api from "../api/api";
 
@@ -28,7 +28,7 @@ function Login() {
     const usernameRef = useRef(null);
     const passwordRef = useRef(null);
     const emailRef = useRef(null);
-    const navigator = useHistory();
+    const navigate = useNavigate();
     const setuserType = useContext(UserUpdateContext)
 
     useEffect(() => {
@@ -71,7 +71,7 @@ function Login() {
             sessionStorage.setItem('email', emailRef.current.value)
             sessionStorage.setItem('ut', true);
             setuserType(true);
-            navigator.push('/home');
+            navigate('/home');
         }
         else if(auth ==  'Not Found'){
             alert(`Incorrect Email/Password`);
@@ -112,7 +112,7 @@ function Login() {
 
     const handleGuestClickEvent = () => {
         setuserType(false);
-        navigator.push('/home');
+        navigate('/home');
     }
     
     return login_flag ?

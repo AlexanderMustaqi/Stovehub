@@ -1,12 +1,12 @@
-import { useHistory } from 'react-router-dom/cjs/react-router-dom.min';
+import { useNavigate } from 'react-router-dom';
 import GalleryIcon from './assets/cooking.png'
 
 function Gallery() {
 
-    const nav = useHistory();
+    const nav = useNavigate();
 
     const handleClickEvent = () => {
-        nav.push(`/gallery`)
+        nav(`/gallery`)
     }
 
     return(<>

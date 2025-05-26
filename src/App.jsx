@@ -1,5 +1,5 @@
 import { createContext, useState } from "react";
-import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
+import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import Login from './Login/Login.jsx';
 import Home from './Home.jsx'
 import ProfilePage from "./Profile/ProfilePage.jsx";
@@ -18,23 +18,12 @@ function App() {
         <UserContext.Provider value={userType}>
             <UserUpdateContext.Provider value={setuserType}>
                 <Router>
-                    <Switch>
-                        <Route exact path='/'>
-                            <Login></Login>
-                        </Route>
-                        <Route exact path='/home'>
-                            <Home></Home>
-                        </Route>
-                        <Route exact path='/guest_home'> 
-                            {/* <Guest></Guest> */}
-                        </Route>
-                        <Route exact path='/profile'>
-                            <ProfilePage></ProfilePage>
-                        </Route>
-                        <Route exact path='/gallery'>
-                            <GalleryPage></GalleryPage>
-                        </Route>
-                    </Switch>
+                    <Routes>
+                        <Route path="/" element={<Login /> }></Route>
+                        <Route path="/home/*" element={<Home />}></Route>
+                        <Route path="/profile/" element={<ProfilePage />}></Route>
+                        <Route path="/gallery/" element={<GalleryPage />}></Route>
+                    </Routes>
                 </Router>
             </UserUpdateContext.Provider>
         </UserContext.Provider>

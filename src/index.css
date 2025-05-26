@@ -163,7 +163,6 @@
 
 .lowerdiv{
   padding: 0;
-  max-height: 800px;
   display: flex;
   justify-content: space-between;
 }

@@ -1,12 +1,11 @@
 import LogoIcon from './assets/top-left-logo.png'
-import { useHistory } from 'react-router-dom/cjs/react-router-dom.min';
-
+import { useNavigate } from 'react-router-dom';
 function Logo() {
 
-    const nav = useHistory();
+    const nav = useNavigate();
     
     const handleClickEvent = () => {
-        nav.push('/home');
+        nav('/home');
     }
 
     return (<>
