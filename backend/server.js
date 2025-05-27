@@ -191,7 +191,7 @@ app.get(`/api/profile_info/:email`, async (req,res) => {
 //GET galleries
 app.get('/api/galleries/:email' , async (req, res) => {
   const email = req.params.email;
-  console.log(email);
+  // console.log(email);
 
   //getting galleries
   try {
@@ -349,10 +349,28 @@ app.post(`/api/add_gal`, async (req, res) => {
   const message = req.body;
 
   try {
-    const result1 = pool.query(`select user_id from user_base where email = ${message.email}`)
-
-    const result2 = pool.query(`INSERT INTO gallery(gallery_name, gallery_image_url, user_id) values (${message.newGal},'NaN',${result1[0]})`)
+    const result1 =  await pool.query(`select user_id from user_base where email = "${message.email}"`)
+    const result2 = await pool.query(`INSERT INTO gallery(gallery_name, gallery_image_url, user_id) values ("${message.newGal}",'NaN',${result1[0][0].user_id})`)
     res.sendStatus(201)
+  }
+  catch(err) {
+    res.sendStatus(500);
+    throw err;
+  }
+})
+
+//DELETE galleries
+
+app.delete(`/api/galleries/:ids`, async (req, res) => {
+  const message = JSON.parse(req.params.ids);
+  // console.log(message);
+
+  try {
+    for (const e of message) {
+      console.log(e);
+      await pool.query(`delete from gallery where gallery_id=${e}`)
+    }
+    res.sendStatus(200);
   }
   catch(err) {
     res.sendStatus(500);

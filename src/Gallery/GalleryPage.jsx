@@ -35,7 +35,8 @@ export default function GalleryPage() {
 
     const ccssh = {
         display: 'flex',
-        flexDirection: 'row'
+        flexDirection: 'row',
+        marginTop: '20px',
     }
 
     const stylesheet2A = {
@@ -86,9 +87,10 @@ export default function GalleryPage() {
 
     const handleRemoveGalConfirmEvent = async () => {
         const gals = galRef.current.querySelectorAll('input[type="checkbox"]');
-        const checkedgals = Array.from(gals).filter(gals => gals.checked).map(gals => gals.id);
+        const checkedgals = Array.from(gals).filter(gals => gals.checked).map(gals => parseInt(gals.id, 10));
         try {
-            const ServerResponse = await api.delete(`/deleteGalleries`, checkedgals);
+            const ServerResponse = await api.delete(`/galleries/${JSON.stringify(checkedgals)}`);
+            if (ServerResponse.status==200) setTrigger(trigger+1);
         }
         catch(err) {
             throw err;
@@ -109,7 +111,7 @@ export default function GalleryPage() {
 
     const handleRemoveRecConfirmEvent = async () => {
         const recs = recRef.current.querySelectorAll('input[type="checkbox"]');
-        const checkedrecs = Array.from(recs).filter(recs => recs.checked).map(recs => recs.id);
+        const checkedrecs = Array.from(recs).filter(recs => recs.checked).map(recs => parseInt(recs.id, 10));
         try {
             const ServerResponse = await api.delete(`/deleteRecipes`, checkedrecs);
         }
@@ -148,8 +150,11 @@ export default function GalleryPage() {
         handleAddGalEvent();
     }
 
-    const handleAddGalConfirmEvent = async () => {
-        const newGal = galRef.current.value;
+    const handleAddGalConfirmEvent = async (e) => {
+        e.preventDefault();
+        const newGal = addRef.current.value;
+        // console.log(newGal);
+        handleAddGalEvent();
         const message = {
             newGal: newGal,
             email: sessionStorage.getItem('email'),
@@ -160,22 +165,9 @@ export default function GalleryPage() {
         }
         catch(err) {
             throw err;
-        } 
-    }
-
-    useEffect(() => {
-        const fetchData = async () => {
-            try {
-                const ServerResponse =  await api.get(`/galleries/"${sessionStorage.getItem('email')}"`);
-                console.log(JSON.parse(ServerResponse.data))
-                setGalleries(JSON.parse(ServerResponse.data));
-            }
-            catch(err) {
-                throw err;
-            }
         }
-        fetchData();
-    }, [])
+
+    }
 
     useEffect(() => {
         const fetchData = async () => {
@@ -196,10 +188,12 @@ export default function GalleryPage() {
         <div className='app'>
             <Navbar></Navbar>
             <div style={pcss}>
+
+
                 {add_gal && 
                 <div className="overlay">
                     <form type='submit' style={formssh}>
-                        <input ref={addRef} type="text" placeholder="Enter the new Gallery name" required/>
+                        <input ref={addRef} type="text" placeholder="Enter Gallery name" required/>
                         <div style={ccssh}>
                             <button type="submit" onClick={handleAddGalConfirmEvent}>Confirm</button>
                             <button type="button" onClick={handleAddGalCancelEvent}>Cancel</button>
@@ -212,10 +206,12 @@ export default function GalleryPage() {
 
                     </form>
                 </div>}
+
+
                 <div style={stylesheet1}>
                     <div style={pcss}>
                         <h1>Galleries:</h1>
-                        <div ref={galRef}>    
+                        <div>    
                             {gal_cbox ? 
                             (<>
                                 <button style={arbutton} onClick={handleRemoveGalConfirmEvent}>Confirm</button>
@@ -228,13 +224,13 @@ export default function GalleryPage() {
                             </>)}
                         </div>
                     </div>
-                    <div style={stylesheet2A}>
-                        {galleries.map((e, i) => <Gallery key={i} id={e.gallery_id} onClick={(i) => handleGalleryClicked} cbox={gal_cbox} gallery={e} />)}
+                    <div ref={galRef} style={stylesheet2A}>
+                        {galleries.map((e, i) => <Gallery key={i} onClick={(i) => handleGalleryClicked} cbox={gal_cbox} gallery={e} />)}
                     </div>
                     <hr />
                     <div style={pcss}>
                         <h1>Recipes:</h1>
-                        <div ref={recRef}>    
+                        <div>    
                             {rec_cbox
                             ?
                             (<>
@@ -249,8 +245,8 @@ export default function GalleryPage() {
                             }
                         </div>
                     </div>
-                    <div style={stylesheet2B}>
-                        {/* {recipes.map((e, i) => <PostCard />)} */}
+                    <div ref={recRef} style={stylesheet2B}>
+                        {recipes.map((e, i) => <PostCard />)}
                     </div>
                 </div>
                 <ChatsBar />

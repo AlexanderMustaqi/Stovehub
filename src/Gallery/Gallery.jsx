@@ -18,12 +18,12 @@ export default function Gallery({cbox:cbox, gallery:gallery}) {
             {!cbox ? 
                 (<div style={ssh1}>
                     {gallery.gallery_name}
-                    <input type="radio" className="gal_radio" />
+                    <input type="radio" name='galleries' className="gal_radio" />
                 </div>)
             : 
                 (<div style={ssh1}>
                     {gallery.gallery_name}
-                    <input type="checkbox" className="gal_checkbox" />
+                    <input type="checkbox" id={gallery.gallery_id} className="gal_checkbox" />
                 </div>)}
         </>
     )
