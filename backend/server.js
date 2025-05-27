@@ -189,12 +189,16 @@ app.get(`/api/profile_info/:email`, async (req,res) => {
 })
 
 //GET galleries
-app.get('/api/galleries/:id' , async (req, res) => {
-  const id = req.params.id;
+app.get('/api/galleries/:email' , async (req, res) => {
+  const email = req.params.email;
+  console.log(email);
 
   //getting galleries
   try {
-    result = await pool.query(`select * from gallery where user_id = ${id}`);
+    result = await pool.query(`select gallery_id, gallery_name, gallery_image_url from gallery 
+                                join user_base on user_base.user_id = gallery.user_id
+                                  where email = ${email};`);
+    // console.log(result[0]);
     res.json(JSON.stringify(result[0]));
   }
   catch(err) {
@@ -336,6 +340,22 @@ app.post(`/api/newBio`, async (req, res) => {
   }
   catch(err) {
     res.status(500);
+    throw err;
+  }
+})
+
+//POST add gal
+app.post(`/api/add_gal`, async (req, res) => {
+  const message = req.body;
+
+  try {
+    const result1 = pool.query(`select user_id from user_base where email = ${message.email}`)
+
+    const result2 = pool.query(`INSERT INTO gallery(gallery_name, gallery_image_url, user_id) values (${message.newGal},'NaN',${result1[0]})`)
+    res.sendStatus(201)
+  }
+  catch(err) {
+    res.sendStatus(500);
     throw err;
   }
 })
