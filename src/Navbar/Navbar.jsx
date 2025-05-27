@@ -13,18 +13,18 @@ function Navbar({ onSearchClick }) {
             <div className="navbar">
                 <div className="navbar-left">
                     
-                    <Logo />
+                    <Logo></Logo>
                     <Search onClick={onSearchClick} />
                   
                 </div>
                 <div className="navbar-center">
-                    <Home />
-                    <Gallery />
+                    <Home></Home>
+                    <Gallery></Gallery>
                 </div>
                 <div className="navbar-right">
-                    <Notifications />
-                    <Cart />
-                    <Profile />
+                    <Notifications></Notifications>
+                    <Cart></Cart>
+                    <Profile></Profile>
                 </div>
             </div>
             <hr />

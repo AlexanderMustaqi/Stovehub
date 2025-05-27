@@ -138,6 +138,28 @@ app.get('/api/users', async (req, res) => {
   }
 });
 
+// GET users by search query
+app.get('/api/users/search', async (req, res) => {
+  const userQuery = req.query.query; // Παίρνουμε το query από τα query parameters
+  console.log(`[Backend] Searching users with query: "${userQuery}"`);
+
+  if (!userQuery) {
+    // Αν δεν υπάρχει query, επιστρέφουμε κενό αποτέλεσμα ή όλους τους χρήστες (επιλογή)
+    // Εδώ επιστρέφουμε κενό αποτέλεσμα για να είναι πιο συγκεκριμένη η αναζήτηση
+    return res.json([]); 
+  }
+
+  try {
+    // Αναζήτηση χρηστών με βάση το username (μπορείς να προσθέσεις και άλλα πεδία αν θες)
+    const [rows] = await pool.query('SELECT user_id, username, email, profile_image_url FROM user_base WHERE username LIKE ?', [`%${userQuery}%`]); // Added email
+    console.log(`[Backend] Found ${rows.length} users for query: "${userQuery}"`);
+    res.json(rows);
+  } catch (err) {
+    console.error("Error searching users:", err);
+    res.status(500).send('DB Error during user search');
+  }
+});
+
 // GET * chats for user_id
 app.get('/api/chats/:email', async (req, res) => {
   const email = req.params.email;
@@ -178,27 +200,30 @@ app.get('/api/messages/:chat', async (req, res) => {
 
 // GET followers for user_id
 app.get('/api/followers/:user', async (req, res) => {
-  const user = req.params.user;
+  
+  const user = req.params.user
 
   try {
-    const [rows] = await pool.query(`select username, user_base.user_id from followers
+    const result = await pool.query(`select username, user_base.user_id from followers 
                                       left join user_base on followers.secondary_user_id = user_base.user_id
-                                        where main_user_id = ?;`, [user]); // Using prepared statement
-    res.json(rows);
-  } catch (err) {
-    console.error("Error fetching followers:", err);
-    res.status(500).send('DB Error');
+                                        where main_user_id = ${user};`);
+    // console.log(result[0]);
+    res.json(result[0]);
   }
-});
+  catch(err) {
+    res.sendStatus(500);
+    throw err;
+  }
+})
 
 // GET profile
-app.get(`/api/profile_info/:email`, async (req, res) => {
-  const email = req.params.email;
+app.get(`/api/profile_info/:id`, async (req, res) => { // Changed from :email to :id
+  const userId = req.params.id;
 
   try {
-    const [rows] = await pool.query(`select username, bio, rank from user_base where email = ?`, [email]); // Using prepared statement
+    const [rows] = await pool.query(`SELECT user_id, username, email, bio, rank, profile_image_url FROM user_base WHERE user_id = ?`, [userId]);
     if (rows.length > 0) {
-      res.json(rows[0]); // Return single object
+      res.json(rows[0]);
     } else {
       res.status(404).send('Profile not found');
     }
@@ -208,12 +233,43 @@ app.get(`/api/profile_info/:email`, async (req, res) => {
   }
 });
 
-// GET profile_recipies
-app.get(`/api/profile_recipies/:email`, async (req, res) => {
-  const email = req.params.email;
+
+//GET galleries
+app.get('/api/galleries/:id' , async (req, res) => {
+  const id = req.params.id;
+
+  //getting galleries
+  try {
+    result = await pool.query(`select * from gallery where user_id = ${id}`);
+    res.json(JSON.stringify(result[0]));
+  }
+  catch(err) {
+    res.status(500);
+    throw err
+  }
+})
+
+//GET recipies for gallery
+app.get(`/api/recipes/:id` , async (req, res) => {
+  const gallery_id = req.params.id;
 
   try {
-    const [rows] = await pool.query(`select recipe.* from recipe join user_base on user_base.user_id = recipe.user_id where email=?`, [email]); // Using prepared statement
+    result = await pool.query(`select * from gal_rec 
+                                join recipes on gal_rec.recipe_id = recipes.id
+                                  where gallery_id=${gallery_id}`);
+  }
+  catch(err) {
+    res.status(500);
+    throw err
+  }
+})
+
+// GET profile_recipies
+app.get(`/api/profile_recipies/:id`, async (req, res) => { // Changed from :email to :id
+  const userId = req.params.id;
+
+  try {
+    const [rows] = await pool.query(`SELECT recipes.* FROM recipes WHERE user_id = ? ORDER BY created_at DESC`, [userId]);
     res.json(rows);
   } catch (err) {
     console.error("Error fetching profile recipes:", err);

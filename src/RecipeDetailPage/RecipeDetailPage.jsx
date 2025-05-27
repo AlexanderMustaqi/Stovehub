@@ -3,6 +3,8 @@ import { useParams, Link } from 'react-router-dom';
 import api from '../api/api';
 import './RecipeDetailPage.css'; 
 import './CommentSection.css';
+import ThumbsUpIcon from '../HomePage/assets/thumbs-up-outline.svg'; // Εισαγωγή εικονιδίων
+import ThumbsDownIcon from '../HomePage/assets/thumbs-down-outline.svg'; // Εισαγωγή εικονιδίων
 import { IdContext } from '../ChatsBar/ChatsBar';
 
 // Ορισμός μιας generic εικόνας προφίλ (αντίστοιχα με το PostCard)
@@ -34,6 +36,10 @@ function RecipeDetailPage() {
   const [comments, setComments] = useState([]);
   const [newCommentText, setNewCommentText] = useState('');
   const currentUserId = useContext(IdContext); // Χρήση του IdContext για να πάρουμε το userId του συνδεδεμένου χρήστη
+  // State για τα reactions, παρόμοια με το PostCard
+  const [localLikes, setLocalLikes] = useState(0);
+  const [localDislikes, setLocalDislikes] = useState(0);
+  const [userReaction, setUserReaction] = useState(null);
 
   useEffect(() => {
     console.log('[RecipeDetailPage] recipeId from URL params:', recipeId); // Log the recipeId
@@ -88,6 +94,15 @@ function RecipeDetailPage() {
     };
   }, [recipeId, currentUserId]); // Προσθήκη currentUserId στις εξαρτήσεις για να ξανατρέξει αν αλλάξει
 
+  // useEffect για την αρχικοποίηση των τοπικών likes/dislikes/userReaction όταν το recipe φορτωθεί/αλλάξει
+  useEffect(() => {
+    if (recipe) {
+      setLocalLikes(recipe.likes_count || 0);
+      setLocalDislikes(recipe.dislikes_count || 0);
+      setUserReaction(recipe.current_user_reaction || null);
+    }
+  }, [recipe]);
+
   const handleCommentSubmit = async (e) => {
     e.preventDefault();
     if (!newCommentText.trim() || !currentUserId) {
@@ -106,6 +121,58 @@ function RecipeDetailPage() {
       alert("Σφάλμα κατά την υποβολή του σχολίου.");
     }
   };
+
+  // Λογική για τα reactions, παρόμοια με το PostCard
+  const handleReaction = async (reactionType) => {
+    if (!currentUserId) {
+      alert("Πρέπει να είστε συνδεδεμένος για να κάνετε like/dislike.");
+      return;
+    }
+    if (!recipe || !recipe.id) {
+        console.error("Recipe or recipe ID is not available for reaction.");
+        return;
+    }
+
+    let newReactionType = reactionType;
+    if (userReaction === reactionType) { // Αν πατήσει το ίδιο κουμπί, αφαιρείται το reaction
+      newReactionType = 'none';
+    }
+
+    try {
+      await api.post(`/recipes/${recipe.id}/react`, { userId: currentUserId, reactionType: newReactionType });
+      
+      const previousReaction = userReaction;
+      setUserReaction(newReactionType);
+
+      // Ενημέρωση των counts (localLikes, localDislikes)
+      if (previousReaction === 'like' && newReactionType !== 'like') {
+        setLocalLikes(prev => Math.max(0, prev - 1)); // Αποφυγή αρνητικών τιμών
+      }
+      if (previousReaction === 'dislike' && newReactionType !== 'dislike') {
+        setLocalDislikes(prev => Math.max(0, prev - 1)); // Αποφυγή αρνητικών τιμών
+      }
+      if (newReactionType === 'like' && previousReaction !== 'like') {
+        setLocalLikes(prev => prev + 1);
+      }
+      if (newReactionType === 'dislike' && previousReaction !== 'dislike') {
+        setLocalDislikes(prev => prev + 1);
+      }
+    } catch (err) {
+      console.error("Error submitting reaction:", err);
+      alert("Σφάλμα κατά την υποβολή του reaction.");
+    }
+  };
+
+  const handleLike = (e) => {
+    e.stopPropagation(); 
+    handleReaction('like');
+  };
+
+  const handleDislike = (e) => {
+    e.stopPropagation(); 
+    handleReaction('dislike');
+  };
+
 
   if (loading) {
     return <div className="recipe-detail-page"><p>Φόρτωση συνταγής...</p></div>;
@@ -140,12 +207,47 @@ function RecipeDetailPage() {
   return (
     <div className="recipe-detail-page">
       <Link to="/home" className="back-link">← Επιστροφή στην Αρχική</Link>
+
+       {/* Εμφάνιση εικόνας προφίλ και ονόματος χρήστη του δημιουργού */}
+      {recipe.user_id && ( // Ελέγχουμε αν υπάρχει user_id για να εμφανίσουμε την ενότητα
+        <div className="recipe-author-container">
+          <img
+            src={recipe.author_image_url ? `http://localhost:5000${recipe.author_image_url}` : GENERIC_PROFILE_IMAGE_URL}
+            alt={recipe.posted_by || 'Author'}
+            className="author-profile-pic-detail"
+            onError={(e) => { e.target.onerror = null; e.target.src = GENERIC_PROFILE_IMAGE_URL; }}
+          />
+          <p className="recipe-author-text">
+            <Link to={`/profile/${recipe.user_id}`}>{recipe.posted_by || 'Άγνωστος Χρήστης'}</Link>
+          </p>
+        </div>
+      )}
+
       {recipe.image_url && (
         <div className="recipe-image-full-container">
           <img src={`http://localhost:5000${recipe.image_url}`} alt={recipe.title} className="recipe-image-full" />
         </div>
       )}
       <h1 className="recipe-title-full">{recipe.title}</h1>
+
+      
+      {/* Ενότητα Reactions κάτω από τον τίτλο */}
+      <div className="recipe-detail-actions">
+        <button
+          onClick={handleLike}
+          className={`like-dislike-btn ${userReaction === 'like' ? 'active-like' : ''}`}
+        >
+          <img src={ThumbsUpIcon} alt="Like" className="icon meta-icon" />
+          {localLikes}
+        </button>
+        <button
+          onClick={handleDislike}
+          className={`like-dislike-btn ${userReaction === 'dislike' ? 'active-dislike' : ''}`}
+        >
+          <img src={ThumbsDownIcon} alt="Dislike" className="icon meta-icon" />
+          {localDislikes}
+        </button>
+      </div>
       
       <div className="recipe-meta-full">
         <p><strong>Κατηγορία:</strong> {recipe.category || 'Δ/Υ'}</p>

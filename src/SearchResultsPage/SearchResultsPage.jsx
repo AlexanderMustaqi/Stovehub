@@ -2,11 +2,13 @@ import React, { useState, useEffect, useContext } from 'react'; // Προσθή�
 import { useLocation } from 'react-router-dom';
 import PostCard from '../HomePage/PostCard'; // Προσαρμογή διαδρομής αν χρειάζεται
 import '../HomePage/HomePage.css'; // Χρήση ίδιων στυλ ή δημιουργία νέων
+import UserCard from '../Profile/UserCard'; // Εισαγωγή του UserCard
 import api from '../api/api';
 import { IdContext } from '../ChatsBar/ChatsBar'; // Υποθέτουμε ότι αυτό είναι το σωστό Context
 
 function SearchResultsPage() {
   const [posts, setPosts] = useState([]);
+  const [currentSearchType, setCurrentSearchType] = useState(null); // State για τον τρέχοντα τύπο αναζήτησης
   const location = useLocation(); // Για πρόσβαση στις παραμέτρους URL
   const currentUserId = useContext(IdContext); // Λήψη του currentUserId
 
@@ -33,6 +35,12 @@ function SearchResultsPage() {
           return obj;
         }, {});
       
+      // Ενημέρωση του τύπου αναζήτησης για χρήση στο rendering
+      if (activeFilters.type) {
+        setCurrentSearchType(activeFilters.type);
+      } else {
+        setCurrentSearchType(null); // Ή 'recipes' ως default αν δεν υπάρχει type
+      }
       console.log("[SearchResultsPage] Active filters from URL (including type):", JSON.stringify(activeFilters));
 
       if (Object.keys(activeFilters).length === 0) {
@@ -120,18 +128,21 @@ function SearchResultsPage() {
 
   return (
     <div className="home-page">
-      {posts.map(post => (
-        <PostCard
-          key={post.id} // Βεβαιώσου ότι το post.id είναι μοναδικό
-          post={{
-            ...post,
-            imageUrl: `http://localhost:5000${post.image_url}`,
-            // Προσαρμογή για να είναι συνεπές με το HomePage.jsx
-            commentCount: post.comment_count || 0, // Χρησιμοποιούμε comment_count όπως στο HomePage
-            comments: [] // Περιττό να περνάμε τα comments εδώ, όπως και στο HomePage
-          }}
-        />
+      {currentSearchType === 'users' && posts.map(user => (
+        <UserCard key={user.user_id} user={user} />
       ))}
+      {currentSearchType === 'recipes' && posts.map(post => (
+          <PostCard
+            key={post.id} // Βεβαιώσου ότι το post.id είναι μοναδικό για συνταγές
+            post={{
+              ...post,
+              imageUrl: `http://localhost:5000${post.image_url}`,
+              // Προσαρμογή για να είναι συνεπές με το HomePage.jsx
+              commentCount: post.comment_count || 0, 
+              comments: [] 
+            }}
+          />
+        ))}
     </div>
   );
 }

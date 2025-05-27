@@ -1,6 +1,6 @@
 /* === Ορισμός Μεταβλητών για την Κάρτα (μπορούν να είναι και στο :root) === */
 :root { /* Ή μπορείς να τα ορίσεις σε ένα πιο γενικό αρχείο CSS */
-  --postcard-bg-color: #f7e2c6;
+  --postcard-bg-color: #f7d2a7;
   --postcard-border-radius: 16px;
   --postcard-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
   --postcard-hover-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);

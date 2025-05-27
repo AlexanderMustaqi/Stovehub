@@ -119,3 +119,76 @@
   text-align: center;
   font-size: 1.2em;
 }
+
+.recipe-author-container {
+  display: flex;
+  align-items: center;
+  gap: 10px; /* Διάστημα μεταξύ εικόνας και κειμένου */
+  margin-bottom: 15px; /* Διάστημα πριν την εικόνα */
+}
+
+.author-profile-pic-detail {
+  width: 40px; /* Προσαρμόστε το μέγεθος όπως θέλετε */
+  height: 40px; /* Προσαρμόστε το μέγεθος όπως θέλετε */
+  border-radius: 50%; /* Για κυκλική εικόνα */
+  object-fit: cover; /* Για να καλύπτει σωστά τον χώρο χωρίς παραμόρφωση */
+  border: 1px solid #ddd; /* Προαιρετικό περίγραμμα */
+}
+
+.recipe-author-text {
+  font-size: 1.1em;
+  color: #555;
+  margin: 0; /* Κατάργηση προεπιλεγμένου margin από το <p> */
+}
+
+.recipe-author-text a {
+  color: #000000; /* Μπορείτε να χρησιμοποιήσετε var(--primary) αν το έχετε ορίσει */
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.recipe-author-txt a:hover {
+  text-decoration: underline;
+}
+
+
+/* Στυλ για τα κουμπιά Reaction στο RecipeDetailPage */
+.recipe-detail-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px; /* Διάστημα κάτω από τον τίτλο */
+  margin-bottom: 20px; /* Διάστημα πάνω από τα meta-data */
+  /* justify-content: center; /* Για κεντράρισμα αν χρειαστεί */
+}
+
+.recipe-detail-actions .like-dislike-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  font-size: 1rem;
+  padding: 8px 14px;
+  border-radius: 20px;
+  transition: color 0.2s ease, transform 0.2s ease, background-color 0.2s ease;
+  color: #555;
+}
+
+.recipe-detail-actions .like-dislike-btn:hover {
+  background-color: #e0e0e0;
+}
+
+.recipe-detail-actions .like-dislike-btn .icon { /* Εξασφαλίζει ότι το στυλ εφαρμόζεται στα εικονίδια μέσα στα κουμπιά */
+  width: 16px;
+  height: 16px;
+}
+
+.recipe-detail-actions .like-dislike-btn.active-like {
+  outline: 2px solid #0d75fd;
+  background-color: rgba(13, 117, 253, 0.1);
+}
+
+.recipe-detail-actions .like-dislike-btn.active-dislike {
+  outline: 2px solid #dc3545;
+  background-color: rgba(220, 53, 69, 0.1);
+}

@@ -1,34 +1,31 @@
-import React, { createContext, useState } from 'react'; // Προσθήκη createContext, useState
-import { BrowserRouter, Routes, Route } from 'react-router-dom'; // Εισαγωγή Routes, Route
+import React, { createContext, useState } from 'react'; 
+import { BrowserRouter, Routes, Route } from 'react-router-dom'; 
 import Login from './Login/Login.jsx';
-import Home from './Home.jsx'; // Αυτό είναι το Home component του συνεργάτη
-import ProfilePage from "./Profile/ProfilePage.jsx"; // Χρειάζεται να υπάρχει αυτό το αρχείο
-import GalleryPage from "./Gallery/GalleryPage.jsx"; // Χρειάζεται να υπάρχει αυτό το αρχείο
+import Home from './Home.jsx'; 
+import ProfilePage from "./Profile/ProfilePage.jsx"; // Για το προφίλ του συνδεδεμένου χρήστη
+import UserProfilePage from "./Profile/UserProfilePage.jsx"; // Για το προφίλ άλλων χρηστών
+import GalleryPage from "./Gallery/GalleryPage.jsx"; 
 
 
 
-// 1. Ορισμός και εξαγωγή του UserContext
 export const UserContext = createContext();
 export const UserUpdateContext = createContext();
 
 function App() {
   
-  const [userType, setUserType] = useState("Registered"); // Ή "Guest" αν προτιμάτε ως αρχική
+  const [userType, setUserType] = useState("Registered"); 
 
-  // Η παρακάτω γραμμή είναι για δοκιμές. Σε παραγωγή, η τιμή θα έπρεπε να τίθεται μετά από login.
-  // if (process.env.NODE_ENV === 'development') {
-  //   sessionStorage.setItem("email", "pn@gmail.com");
-  // }
+  
 
   return (
     <UserContext.Provider value={userType}>
       <UserUpdateContext.Provider value={setUserType}>
         <BrowserRouter>
-          {/* Εδώ ορίζουμε τις διαδρομές χρησιμοποιώντας τη σύνταξη της v6 */}
           <Routes>
             <Route path="/" element={<Login />} />
             <Route path="/home/*" element={<Home />} /> 
-            <Route path="/profile" element={<ProfilePage />} />
+            <Route path="/profile" element={<ProfilePage />} /> {/* Προσωπικό προφίλ */}
+            <Route path="/user-profile/:userId" element={<UserProfilePage />} /> {/* Προφίλ άλλου χρήστη */}
             <Route path="/gallery" element={<GalleryPage />} />
           
           </Routes>
