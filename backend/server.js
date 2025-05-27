@@ -179,7 +179,7 @@ app.get(`/api/profile_info/:email`, async (req,res) => {
 
   try {
     const result = await pool.query(`select username, bio, rank from user_base where email = "${email}"`);
-    console.log(result[0]);
+    // console.log(result[0]);
     res.send(JSON.stringify(result[0]));
   }
   catch(err) {
@@ -218,10 +218,27 @@ app.get(`/api/recipes/:id` , async (req, res) => {
   }
 })
 
+//GET authentication
+app.get('/api/getAuth/:user', async (req, res) => {
+  const ClientRequest = req.params.user;
+  const user = JSON.parse(ClientRequest);
+
+  try {
+    result = await pool.query(`select count(*) as c from user_base
+                                where user_base.email = "${user.email}" AND password="${user.password}";`)
+    if (result[0][0].c == 1) (res.send("Found"))
+    else {res.send("Not Found")};
+  }
+  catch (err) {
+    res.sendStatus(500);
+    throw err;
+  }
+})
+
 //POST chat
 app.post('/api/postChat', async (req, res) => {
   const ClientRequest = req.body;
-  console.log(ClientRequest);
+  // console.log(ClientRequest);
   const { chat_name, chat_users, user_email} = ClientRequest;
   var userId;
   let connection
@@ -295,19 +312,30 @@ app.post(`/api/postFollower`, async (req, res) => {
   }
 })
 
-//GET authentication
-app.get('/api/getAuth/:user', async (req, res) => {
-  const ClientRequest = req.params.user;
-  const user = JSON.parse(ClientRequest);
+//POST new name
+app.post(`/api/newName`, async (req, res) => {
+  const message = req.body;
 
   try {
-    result = await pool.query(`select count(*) as c from user_base
-                                where user_base.email = "${user.email}" AND password="${user.password}";`)
-    if (result[0][0].c == 1) (res.send("Found"))
-    else {res.send("Not Found")};
+    result = await pool.query(`update user_base set username="${message.name}" where email="${message.email}"`);
+    res.sendStatus(201);
   }
-  catch (err) {
-    res.sendStatus(500);
+  catch(err) {
+    res.status(500);
+    throw err;
+  }
+})
+
+//POST new bio
+app.post(`/api/newBio`, async (req, res) => {
+  const message = req.body;
+
+  try {
+    result = await pool.query(`update user_base set bio="${message.bio}" where email="${message.email}"`);
+    res.sendStatus(201);
+  }
+  catch(err) {
+    res.status(500);
     throw err;
   }
 })
