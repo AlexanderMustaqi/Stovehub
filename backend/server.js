@@ -239,6 +239,40 @@ app.get('/api/getAuth/:user', async (req, res) => {
   }
 })
 
+app.get('/api/posts', async (req, res) => {
+  const currentUserId = req.query.userId ? parseInt(req.query.userId, 10) : null;
+  try {
+    let sqlQuery = `
+      SELECT 
+        r.*, 
+        u.username AS posted_by,
+        u.profile_image_url AS author_image_url,
+        (SELECT COUNT(*) FROM recipe_reactions rr WHERE rr.recipe_id = r.id AND rr.reaction = 'like') AS likes_count,
+        (SELECT COUNT(*) FROM recipe_reactions rr WHERE rr.recipe_id = r.id AND rr.reaction = 'dislike') AS dislikes_count,
+        (SELECT COUNT(*) FROM recipe_comments rc WHERE rc.recipe_id = r.id) AS comment_count 
+    `;
+    const queryParams = [];
+    if (currentUserId) {
+      sqlQuery += `,
+        (SELECT rr_user.reaction FROM recipe_reactions rr_user WHERE rr_user.recipe_id = r.id AND rr_user.user_id = ?) AS current_user_reaction
+      `;
+      queryParams.push(currentUserId);
+    }
+    sqlQuery += `
+      FROM recipes r
+      LEFT JOIN user_base u ON r.user_id = u.user_id
+      ORDER BY r.created_at DESC
+    `;
+    const [rows] = await pool.query(sqlQuery, queryParams);
+    const results = rows.map(row => ({ ...row, likes_count: parseInt(row.likes_count) || 0, dislikes_count: parseInt(row.dislikes_count) || 0, comment_count: parseInt(row.comment_count) || 0 }));
+    res.json(results);
+  } catch (err) {
+    console.error("Error fetching recipes:", err);
+    res.status(500).send('Error fetching recipes');
+  }
+});
+
+
 //POST chat
 app.post('/api/postChat', async (req, res) => {
   const ClientRequest = req.body;

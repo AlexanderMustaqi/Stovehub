@@ -2,8 +2,8 @@ import Navbar from "../Navbar/Navbar"
 import ChatsBar from "../ChatsBar/ChatsBar"
 import { useEffect, useState, useRef } from "react"
 import Gallery from "./Gallery.jsx"
-import PostCard from "../HomePage/PostCard"
 import api from "../api/api.js"
+import Recipe from "./Recipe.jsx"
 
 export default function GalleryPage() {
 
@@ -246,7 +246,7 @@ export default function GalleryPage() {
                         </div>
                     </div>
                     <div ref={recRef} style={stylesheet2B}>
-                        {recipes.map((e, i) => <PostCard />)}
+                        {recipes.map((e, i) => <Recipe key={i} cbox={rec_cbox} recipe={e} />)}
                     </div>
                 </div>
                 <ChatsBar />
