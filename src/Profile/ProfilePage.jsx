@@ -43,17 +43,6 @@ function ProfilePage() {
         alignItems: 'left'
     }
 
-    // const FollowOption = {
-    //     height: 'inherit',
-    //     alignItems: 'top',
-    // }
-
-    // const FollowButton = {
-    //     width: '200px',
-    //     height: '100px',
-    //     fontSize: '50px'
-    // }
-
     const Lower = {
         border: '2px solid black',
         display: 'flex',
@@ -104,9 +93,6 @@ function ProfilePage() {
                             <h5 ref={rankRef}>Rank</h5>
                         </div>
                     </div>
-                    <ul style={Lower}>
-                        {recipies.map((e, i) => <li key={i}></li>)}
-                    </ul>
                 </div>
                 <ChatsBar />
             </div>
