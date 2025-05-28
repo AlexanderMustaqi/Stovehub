@@ -22,6 +22,45 @@ const corsOptions = {
 app.use(cors(corsOptions));
 app.use(express.json());
 
+//CLASSES
+
+class candidate{
+  votes = 0;
+  constructor(name){
+    this.name = name;
+  }
+
+  plus = () => {
+    votes++;
+  }
+}
+
+class ballot{
+  candidates = [];
+  constructor(chat_id, name){
+    this.chat_id = chat_id
+    this.name = name
+  }
+
+  addCandidate = (name) => {
+    const newCandidate = new candidate(name);
+    this.candidates.push(newCandidate);
+  }
+
+  winner = () => {
+    if (this.candidates.length == 0) return []
+    let winner = this.candidates[0]
+    let winners = [];
+    winners.push(winner);
+    this.candidates.forEach((e) => {
+      if (e.votes > winner.votes) {winners.splice(0, winners.length);winner = e;winners.push(winner)}
+      else if (e.votes == winner.votes) winners.push(e) 
+    })
+    if (winners.length > 1) return winners
+    else return [winner]
+  }
+}
+
 //Database Connection
 const pool = mysql.createPool({
   host:'localhost',
@@ -34,6 +73,8 @@ const pool = mysql.createPool({
 })
 
 //WEBSOCKET SERVER
+
+let ballots = []
 
 const wss = new webSocket.Server({ server:server })
 
@@ -64,6 +105,28 @@ wss.on('connection', async (ws) => {
     }
     else if(ClientResponse.type == 'test') {
       console.log(ClientResponse.message);
+    } 
+    else if(ClientResponse.type == 'ballot') {
+      const new_ballot = new ballot(ClientResponse.id, ClientResponse.name)
+      ClientResponse.candidates.forEach((e) => {
+        new_ballot.addCandidate(e);
+      })
+      ballots.push(new_ballot)
+      const ServerResponse = {
+        type: 'ballot index',
+        message: ballots.length-1
+      }
+      ws.send(JSON.stringify(ServerResponse)) //Sending Ballot Index
+    }
+    else if(ClientResponse.type == 'winner') {
+      const ServerResponse = {
+        type: 'winner',
+        message: ballots[ClientResponse.index].winner()
+      }
+      ws.send(JSON.stringify(ServerResponse)) //Sending Ballot Winner
+    }
+    else if(ClientResponse.type == 'vote') {
+      ballots[ClientResponse.index].candidates.forEach((e) => {if (e.name == `${ClientResponse.name}`) e.plus()})
     }
     else {
       try {
@@ -419,6 +482,8 @@ app.post(`/api/gal_rec`, async (req, res) => {
     throw err;
   }
 })
+
+//POST ballot
 
 //DELETE galleries
 app.delete(`/api/galleries/:ids`, async (req, res) => {

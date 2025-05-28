@@ -1,6 +1,6 @@
 import { useRef, useState } from "react"
 
-function ChatVote() {
+function ChatVote({selected: selected}) {
 
     const [ballot, setBallot] = useState(false);
     const [candidates, setCandidates] = useState([]);
@@ -11,14 +11,10 @@ function ChatVote() {
     const formssh = {
         display: "flex",
         flexDirection: "column",
-    }
-
-    const candidateSSH = {
-
-    }
-
-    const CCSSH = {
-        
+        borderRadius: "8px",
+        background:'#f7d2a7',
+        padding: "20px",
+        paddingTop: '10px'
     }
 
     const buttonSSH = {
@@ -45,7 +41,8 @@ function ChatVote() {
         e.preventDefault();
         const message = {
             name: nameRef.current.value,
-            candidates: candidates
+            candidates: candidates,
+            chad_id: selected
         }
         const postBallot = async () => {
             try {
@@ -60,7 +57,7 @@ function ChatVote() {
     }
 
     const handleRemoveCandidateEvent = (index) => {
-        
+        setCandidates(candidates.filter((_ ,i) => i !==index))
     }
 
     return <>
@@ -69,13 +66,14 @@ function ChatVote() {
         (
         <div className="overlay">
             <form type="submit" style={formssh}>
+                <h2>Create new Ballot</h2>
                 <input ref={nameRef} type="text" placeholder="Enter Ballot Name" required />
                 <div style={candidateSSH}>
                     <input ref={candidateRef} type="text" placeholder="Enter a candidate" />
                     <button type="button" onClick={handleAddCandidateEvent}>Add</button>
                 </div>
                 <ul>
-                    {candidates.map((e, i) => <li key={i} onClick={handleRemoveCandidateEvent} id={e}> {e} </li>)}
+                    {candidates.map((e, i) => <li key={i} onClick={() => handleRemoveCandidateEvent(i)} id={e}> {e} </li>)}
                 </ul>
                 <div style={CCSSH}>
                     <button type="submit" style={buttonSSH} onClick={handleConfirmBallotEvent}>Confirm</button>

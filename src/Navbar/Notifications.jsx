@@ -83,7 +83,7 @@ function Notifications() {
                     </div>)
                 }       
             </div>)}
-
+            <hr />
             </>
             )
 }

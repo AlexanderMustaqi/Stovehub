@@ -88,7 +88,7 @@ function ChatWin({selected : selected, setSelected: setSelected}) {
                     {selected[1]}
                 </div>
                 <div>
-                    <ChatVote />
+                    <ChatVote selected={selected} />
                     <button onClick={handleXClickEvent}>X</button>
                 </div>
             </div>
