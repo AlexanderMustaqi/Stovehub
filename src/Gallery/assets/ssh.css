@@ -1,0 +1,28 @@
+
+.gal_radio{
+    appearance: none;
+    background: lightblue;
+    border-radius: 8px;
+    width: 100px;
+    height: 90%;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.gal_radio:checked{
+  background: blue;
+}
+
+.gal_checkbox{
+    appearance: none;
+    background: lightblue;
+    border-radius: 8px;
+    width: 100px;
+    height: 90%;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.gal_checkbox:checked{
+    background: red;
+}

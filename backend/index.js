@@ -317,39 +317,47 @@ app.get(`/api/profile_recipies/:id`, async (req, res) => { // Changed from :emai
 // POST chat
 app.post('/api/postChat', async (req, res) => {
   const ClientRequest = req.body;
-  console.log(ClientRequest);
+  //console.log(ClientRequest);
   const { chat_name, chat_users, user_email } = ClientRequest;
-  let userId;
+  var userId;
   let connection;
 
   try {
-    const [userRows] = await pool.query(`select user_id from user_base where email = ?`, [user_email]); // Using prepared statement
-    if (userRows.length === 0) {
-      return res.status(404).send('User not found');
-    }
-    userId = userRows[0].user_id; // Correctly get user_id
+    const result = await pool.query(`select user_id from user_base where email = "${user_email}"`)
+    userId = result[0];
+  }
+  catch(err) {
+    res.status(500);
+    throw err
+  }
 
+  try {
     connection = await pool.getConnection();
+
     await connection.beginTransaction();
 
-    const [result] = await connection.execute(`insert into chat(chat_name, chat_settings) values (?, 1)`, [chat_name]); // Using prepared statement
+    const [ result ] = await connection.execute(`insert into chat(chat_name, chat_settings)
+                                              values ('${chat_name}',1)`)
     const chat_id = result.insertId;
 
     for (const chatUser of chat_users) {
-      await connection.execute(`INSERT INTO chat_user(chat_id, user_id) values (?, ?)`, [chat_id, chatUser]); // Using prepared statement
+      await connection.execute(`INSERT INTO chat_user(chat_id, user_id) values (${chat_id}, ${chatUser})`)
     }
-    await connection.execute(`Insert into chat_user(chat_id, user_id) values (?, ?)`, [chat_id, userId]); // Using prepared statement
+      await connection.execute(`Insert into chat_user(chat_id, user_id) values (${chat_id}, ${userId})`)
 
     await connection.commit();
-    res.status(201).send('Chat created successfully');
-  } catch (err) {
+  }
+  catch(err) {
+
     if (connection) await connection.rollback();
-    console.error("Error posting chat:", err);
-    res.status(500).send('DB Error');
-  } finally {
+
+    throw err;
+    res.status(500);
+  }
+  finally {
     if (connection) connection.release();
   }
-});
+})
 
 // POST registeredUser
 app.post('/api/postRegisteredUser', async (req, res) => {

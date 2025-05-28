@@ -4,8 +4,9 @@ import Navbar from "../Navbar/Navbar";
 import ChatsBar from "../ChatsBar/ChatsBar";
 import api from "../api/api";
 import { IdContext } from '../ChatsBar/ChatsBar'; // Για το ID του συνδεδεμένου χρήστη
-import './ProfilePage.css'; // Χρήση των ίδιων CSS με το ProfilePage
+import './ProfilePage.css'; 
 import { FilterSearchOverlay } from '../Navbar/FilterSearchOverlay.jsx'; // Για την αναζήτηση
+import ProfileRecipeCard from './ProfileRecipeCard'; 
 
 export default function UserProfilePage() {
     const { userId } = useParams(); // ID του χρήστη του οποίου το προφίλ βλέπουμε
@@ -23,17 +24,15 @@ export default function UserProfilePage() {
 
     const defaultPfpSrc = `http://localhost:5000/uploads/pfp/default-pfp.svg`;
 
-    // Συνάρτηση για τη φόρτωση της λίστας των followers και τον καθορισμό του isFollowing
+    // Συνάρτηση για να φέρει τη λίστα των followers του χρήστη
     const fetchFollowDetails = async () => {
         if (!userId) {
             setLoadingFollowData(false);
             return; 
         }
-        // Δεν χρειάζεται να περιμένουμε το loggedInUserId εδώ, καθώς ο έλεγχος isFollowing γίνεται μετά την απάντηση
+        
         setLoadingFollowData(true);
         try {
-            // Κλήση στο endpoint που επιστρέφει τη λίστα των followers του profile user
-            // Χρησιμοποιούμε το :userId από το URL params, που αντιστοιχεί στο :user του backend endpoint
             const response = await api.get(`/followers/${userId}`); 
             const followersList = response.data; 
 
@@ -62,7 +61,7 @@ export default function UserProfilePage() {
     useEffect(() => {
         if (!userId) {
             setLoadingProfile(false);
-            setLoadingFollowData(false); // Σταμάτα και το loading των follow data
+            setLoadingFollowData(false); 
             return;
         }
 
@@ -253,9 +252,11 @@ export default function UserProfilePage() {
                     <div className="profile-recipes-section">
                         <h2>Συνταγές Χρήστη</h2>
                         {recipes.length > 0 ? (
-                            <ul className="profile-recipes-list">
-                                {recipes.map((recipe) => <li key={recipe.id}>{recipe.title || 'Recipe without title'}</li>)}
-                            </ul>
+                            <div className="profile-recipes-grid"> {/* Αλλαγή από ul σε div με grid class */}
+                                {recipes.map((recipe) => (
+                                    <ProfileRecipeCard key={recipe.id} recipe={recipe} />
+                                ))}
+                            </div>
                         ) : (
                             <p>Αυτός ο χρήστης δεν έχει δημοσιεύσει συνταγές.</p>
                         )}
