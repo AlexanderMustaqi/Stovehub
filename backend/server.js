@@ -236,6 +236,7 @@ app.get('/api/getAuth/:user', async (req, res) => {
   }
 })
 
+//GET posts
 app.get('/api/posts', async (req, res) => {
   const currentUserId = req.query.userId ? parseInt(req.query.userId, 10) : null;
   try {
@@ -268,6 +269,20 @@ app.get('/api/posts', async (req, res) => {
     res.status(500).send('Error fetching recipes');
   }
 });
+
+// GET profile_recipies
+app.get(`/api/profile_recipies/:id`, async (req, res) => { // Changed from :email to :id
+  const userId = req.params.id;
+
+  try {
+    const [rows] = await pool.query(`SELECT recipes.* FROM recipes WHERE user_id = ? ORDER BY created_at DESC`, [userId]);
+    res.json(rows);
+  } catch (err) {
+    console.error("Error fetching profile recipes:", err);
+    res.status(500).send('DB Error');
+  }
+});
+
 
 
 //POST chat
@@ -390,15 +405,27 @@ app.post(`/api/add_gal`, async (req, res) => {
   }
 })
 
-//DELETE galleries
-
-app.delete(`/api/galleries/:ids`, async (req, res) => {
-  const message = JSON.parse(req.params.ids);
+//POST gal_rec
+app.post(`/api/gal_rec`, async (req, res) => {
+  const message = req.body;
   // console.log(message);
 
   try {
+    const result = await pool.query(`insert into gal_rec(gallery_id, recipe_id) values (${message.gal},${message.rec})`);
+    res.sendStatus(200);
+  }
+  catch(err) {
+    res.sendStatus(500);
+    throw err;
+  }
+})
+
+//DELETE galleries
+app.delete(`/api/galleries/:ids`, async (req, res) => {
+  const message = JSON.parse(req.params.ids);
+
+  try {
     for (const e of message) {
-      // console.log(e);
       await pool.query(`delete from gallery where gallery_id=${e}`)
     }
     res.sendStatus(200);
@@ -409,9 +436,9 @@ app.delete(`/api/galleries/:ids`, async (req, res) => {
   }
 })
 
+//DELETE gal_rec
 app.delete(`/api/gal_recipes/:message`, async(req, res) => {
   const message = JSON.parse(req.params.message);
-  // console.log(message);
 
   try { 
     for (const e of message.recs) {

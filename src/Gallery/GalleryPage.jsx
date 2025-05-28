@@ -1,9 +1,10 @@
 import Navbar from "../Navbar/Navbar"
 import ChatsBar from "../ChatsBar/ChatsBar"
-import { useEffect, useState, useRef, createContext } from "react"
+import { useEffect, useState, useRef, createContext, useContext } from "react"
 import Gallery from "./Gallery.jsx"
 import api from "../api/api.js"
 import Recipe from "./Recipe.jsx"
+import e from "cors"
 
 export const recipeContext = createContext();
 export const selectedContext = createContext();
@@ -78,6 +79,7 @@ export default function GalleryPage() {
     const [add_gal, setAddGal] = useState(false);
     const [add_rec, setAddRec] = useState(false);   
     const [selected, setSelected] = useState(0);
+    const [user_recipes, setUserRecipes] = useState([])
 
     const galRef = useRef(null);
     const recRef = useRef(null);
@@ -154,7 +156,7 @@ export default function GalleryPage() {
         }
         try {
             const ServerResponse = await api.post(`/add_gal`, message);
-            if(ServerResponse.status==201) setTrigger(trigger=trigger+1);
+            if(ServerResponse.status==201) setTrigger(trigger+1);
         }
         catch(err) {
             throw err;
@@ -163,15 +165,46 @@ export default function GalleryPage() {
     }
 
     const handleAddRecipe = () => {
-
+        const fetchRecipes = async () => {
+            try {
+                const UserId = await api.get(`/user_id/"${sessionStorage.getItem('email')}"`)
+                const ServerResponse = await api.get(`/profile_recipies/${JSON.parse(UserId.data)[0].user_id}`)
+                setUserRecipes(ServerResponse.data);
+            }
+            catch(err) {
+                throw err;
+            }
+        }
+        fetchRecipes();
+        setAddRec(!add_rec)
     }
 
-    const handleAddRecConfirm = () => {
-
+    const handleAddRecConfirmEvent = (e) => {
+        e.preventDefault();
+        const postRecipeToGal = async () => {
+            const message = {
+                gal: selected,
+                rec: parseInt(addRef.current.value, 10)
+            }
+            try {
+                const ServerResponse = await api.post(`/gal_rec`, message)
+                const newRecipe = {
+                    id: addRef.current.value,
+                    title: addRef.current.textContent
+                }
+                if (ServerResponse.status==200) setRecipes(r => [...r, newRecipe]);
+            }
+            catch(err) {
+                throw err;
+            }
+        }
+        postRecipeToGal();
+        setAddRec(!add_rec)
     }
 
-    const handleAddRecCancel = () => {
-        
+    const handleAddRecCancelEvent = (e) => {
+        e.preventDefault();
+        setAddRec(!add_rec);
     }
 
     useEffect(() => {
@@ -198,7 +231,7 @@ export default function GalleryPage() {
                 {add_gal && 
                 <div className="overlay">
                     <form type='submit' style={formssh}>
-                        <input ref={addRef} type="text" placeholder="Enter Gallery name" required/>
+                        <input ref={addRef} type="text" placeholder="" required/>
                         <div style={ccssh}>
                             <button type="submit" onClick={handleAddGalConfirmEvent}>Confirm</button>
                             <button type="button" onClick={handleAddGalCancelEvent}>Cancel</button>
@@ -207,8 +240,14 @@ export default function GalleryPage() {
                 </div>}
                 {add_rec && 
                 <div className="overlay">
-                    <form type="submit">
-
+                    <form type="submit" style={formssh}>
+                        <select ref={addRef} name='recipes' required>
+                            {user_recipes.map((e, i) => <option key={i} value={e.id}>{e.title}</option>)}
+                        </select>
+                        <div style={ccssh}>
+                            <button type="submit" onClick={handleAddRecConfirmEvent}>Confirm</button>
+                            <button type="button" onClick={handleAddRecCancelEvent}>Cancel</button>
+                        </div>
                     </form>
                 </div>}
 
