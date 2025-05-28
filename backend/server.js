@@ -191,14 +191,10 @@ app.get(`/api/profile_info/:email`, async (req,res) => {
 //GET galleries
 app.get('/api/galleries/:email' , async (req, res) => {
   const email = req.params.email;
-  // console.log(email);
-
-  //getting galleries
   try {
     result = await pool.query(`select gallery_id, gallery_name, gallery_image_url from gallery 
                                 join user_base on user_base.user_id = gallery.user_id
                                   where email = ${email};`);
-    // console.log(result[0]);
     res.json(JSON.stringify(result[0]));
   }
   catch(err) {
@@ -208,13 +204,14 @@ app.get('/api/galleries/:email' , async (req, res) => {
 })
 
 //GET recipies for gallery
-app.get(`/api/recipes/:id` , async (req, res) => {
+app.get(`/api/gal_recipes/:id` , async (req, res) => {
   const gallery_id = req.params.id;
 
   try {
     result = await pool.query(`select * from gal_rec 
                                 join recipes on gal_rec.recipe_id = recipes.id
                                   where gallery_id=${gallery_id}`);
+    res.json(JSON.stringify(result[0]));
   }
   catch(err) {
     res.status(500);
@@ -310,8 +307,8 @@ app.post('/api/postChat', async (req, res) => {
 
     if (connection) await connection.rollback();
 
-    throw err;
     res.status(500);
+    throw err;
   }
   finally {
     if (connection) connection.release();
@@ -401,8 +398,24 @@ app.delete(`/api/galleries/:ids`, async (req, res) => {
 
   try {
     for (const e of message) {
-      console.log(e);
+      // console.log(e);
       await pool.query(`delete from gallery where gallery_id=${e}`)
+    }
+    res.sendStatus(200);
+  }
+  catch(err) {
+    res.sendStatus(500);
+    throw err;
+  }
+})
+
+app.delete(`/api/gal_recipes/:message`, async(req, res) => {
+  const message = JSON.parse(req.params.message);
+  // console.log(message);
+
+  try { 
+    for (const e of message.recs) {
+      await pool.query(`delete from gal_rec where gallery_id = ${message.gal} and recipe_id = ${e}`);
     }
     res.sendStatus(200);
   }

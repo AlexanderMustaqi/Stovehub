@@ -1,9 +1,12 @@
 import Navbar from "../Navbar/Navbar"
 import ChatsBar from "../ChatsBar/ChatsBar"
-import { useEffect, useState, useRef } from "react"
+import { useEffect, useState, useRef, createContext } from "react"
 import Gallery from "./Gallery.jsx"
 import api from "../api/api.js"
 import Recipe from "./Recipe.jsx"
+
+export const recipeContext = createContext();
+export const selectedContext = createContext();
 
 export default function GalleryPage() {
 
@@ -74,6 +77,7 @@ export default function GalleryPage() {
     const [rec_cbox, setRecCbox] = useState(false);
     const [add_gal, setAddGal] = useState(false);
     const [add_rec, setAddRec] = useState(false);   
+    const [selected, setSelected] = useState(0);
 
     const galRef = useRef(null);
     const recRef = useRef(null);
@@ -112,8 +116,13 @@ export default function GalleryPage() {
     const handleRemoveRecConfirmEvent = async () => {
         const recs = recRef.current.querySelectorAll('input[type="checkbox"]');
         const checkedrecs = Array.from(recs).filter(recs => recs.checked).map(recs => parseInt(recs.id, 10));
+        const message = JSON.stringify({
+            recs: checkedrecs,
+            gal: selected
+        })
         try {
-            const ServerResponse = await api.delete(`/deleteRecipes`, checkedrecs);
+            const ServerResponse = await api.delete(`/gal_recipes/${message}`);
+            if (ServerResponse.status==200) setTrigger(trigger+1);
         }
         catch(err) {
             throw err;
@@ -124,22 +133,6 @@ export default function GalleryPage() {
     const handleRemoveRecCancelEvent = () => {
 
         handleRemoveRecipe();
-    }
-
-    const handleGalleryClicked =  async (i) => {
-        const clickedGal = galleries[i].gallery_id;
-
-        try {
-            const ServerResponse = await api.get(`/gal_recipes/${clickedGal}`)
-            setRecipes(ServerResponse.data);
-        }
-        catch(err) {
-            throw err;
-        }
-    }
-
-    const handleAddRecipe = () => {
-
     }
 
     const handleAddGalEvent = () => {
@@ -167,6 +160,18 @@ export default function GalleryPage() {
             throw err;
         }
 
+    }
+
+    const handleAddRecipe = () => {
+
+    }
+
+    const handleAddRecConfirm = () => {
+
+    }
+
+    const handleAddRecCancel = () => {
+        
     }
 
     useEffect(() => {
@@ -224,9 +229,13 @@ export default function GalleryPage() {
                             </>)}
                         </div>
                     </div>
-                    <div ref={galRef} style={stylesheet2A}>
-                        {galleries.map((e, i) => <Gallery key={i} onClick={(i) => handleGalleryClicked} cbox={gal_cbox} gallery={e} />)}
-                    </div>
+                    <recipeContext.Provider value={setRecipes}>
+                        <selectedContext.Provider value={setSelected}>
+                            <div ref={galRef} style={stylesheet2A}>
+                                {galleries.map((e, i) => <Gallery key={i} cbox={gal_cbox} gallery={e} />)}
+                            </div>
+                        </selectedContext.Provider>        
+                    </recipeContext.Provider>
                     <hr />
                     <div style={pcss}>
                         <h1>Recipes:</h1>
