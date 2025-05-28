@@ -25,11 +25,33 @@ app.use(cors(corsOptions)); // Using corsOptions from the second file
 app.use(express.json());
 
 // multer για εικόνες
-const storage = multer.diskStorage({
+const recipeImageStorage = multer.diskStorage({
   destination: 'uploads/',
   filename: (req,file,cb) => cb(null, Date.now() + path.extname(file.originalname))
 });
-const upload = multer({ storage });
+const uploadRecipeImage = multer({ storage: recipeImageStorage });
+
+// multer για εικόνες προφίλ (pfp)
+const pfpStorage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, 'uploads/pfp/'); // Συγκεκριμένος φάκελος για εικόνες προφίλ
+  },
+  filename: (req, file, cb) => {
+    cb(null, `${Date.now()}${path.extname(file.originalname)}`); // Μοναδικό όνομα αρχείου
+  }
+});
+const uploadPfp = multer({
+  storage: pfpStorage,
+  limits: { fileSize: 5 * 1024 * 1024 }, // Όριο μεγέθους αρχείου, π.χ. 5MB
+  fileFilter: (req, file, cb) => {
+    // Αποδοχή μόνο αρχείων εικόνας
+    if (file.mimetype.startsWith('image/')) {
+      cb(null, true);
+    } else {
+      cb(new Error('Only image files are allowed!'), false);
+    }
+  }
+});
 
 // σύνδεση MySQL
 const pool = mysql.createPool({ // Using connection pool from the second file
@@ -198,23 +220,38 @@ app.get('/api/messages/:chat', async (req, res) => {
   }
 });
 
-// GET followers for user_id
-app.get('/api/followers/:user', async (req, res) => {
-  
-  const user = req.params.user
+//GET my_profile
+app.get(`/api/my_profile_info/:email`, async (req,res) => {
+  const email = req.params.email;
 
   try {
-    const result = await pool.query(`select username, user_base.user_id from followers 
-                                      left join user_base on followers.secondary_user_id = user_base.user_id
-                                        where main_user_id = ${user};`);
+    const result = await pool.query(`select username, bio, rank, profile_image_url from user_base where email = "${email}"`);
     // console.log(result[0]);
-    res.json(result[0]);
+    res.send(JSON.stringify(result[0]));
   }
   catch(err) {
-    res.sendStatus(500);
+    res.status(500);
     throw err;
   }
 })
+
+// GET follower count
+app.get('/api/follower_count/:id', async (req, res) => {
+  const id = req.params.id;
+  try {
+    const [rows] = await pool.query(`SELECT COUNT(*) AS follower_count FROM followers WHERE main_user_id = ?`, [id]);
+    if (rows.length > 0) {
+      res.json({ follower_count: rows[0].follower_count });
+    } else {
+      res.status(404).send('User not found');
+    }
+  } catch (err) {
+    console.error("Error fetching follower count:", err);
+    res.status(500).send('DB Error');
+  }
+})
+  
+
 
 // GET profile
 app.get(`/api/profile_info/:id`, async (req, res) => { // Changed from :email to :id
@@ -328,28 +365,62 @@ app.post('/api/postRegisteredUser', async (req, res) => {
   }
 });
 
-// POST new follower
-app.post(`/api/postFollower`, async (req, res) => {
+//POST new name
+app.post(`/api/newName`, async (req, res) => {
   const message = req.body;
 
   try {
-    const [mainUserRows] = await pool.query(`select user_id from user_base where email=?`, [message.main_user]); // Using prepared statement
-    if (mainUserRows.length === 0) {
-      return res.status(404).send('Main user not found');
-    }
-    const m_user = mainUserRows[0].user_id; // Correctly get user_id
+    const result = await pool.query(`update user_base set username="${message.name}" where email="${message.email}"`);
+    res.sendStatus(201);
+  }
+  catch(err) {
+    res.status(500);
+    throw err;
+  }
+})
 
-    const [secUserRows] = await pool.query(`select user_id from user_base where email=?`, [message.sec_user]); // Using prepared statement
-    if (secUserRows.length === 0) {
-      return res.status(404).send('Secondary user not found');
-    }
-    const s_user = secUserRows[0].user_id; // Correctly get user_id
+//POST new bio
+app.post(`/api/newBio`, async (req, res) => {
+  const message = req.body;
 
-    await pool.query(`insert into followers(main_user_id, secondary_user_id) values (?, ?)`, [m_user, s_user]); // Using prepared statement
-    res.send('success');
+  try {
+    const result = await pool.query(`update user_base set bio="${message.bio}" where email="${message.email}"`);
+    res.sendStatus(201);
+  }
+  catch(err) {
+    res.status(500);
+    throw err;
+  }
+})
+
+// POST new pfp
+app.post('/api/profile/pfp', uploadPfp.single('profileImage'), async (req, res) => {
+  const { email } = req.body; // Παίρνουμε το email από το σώμα του request
+
+  if (!req.file) {
+    return res.status(400).json({ message: 'No image file uploaded.' });
+  }
+  if (!email) {
+    // Αυτό το σφάλμα δεν θα έπρεπε να συμβεί αν το frontend στέλνει πάντα το email
+    return res.status(400).json({ message: 'Email is required to update profile picture.' });
+  }
+
+  const imageUrlPath = `/uploads/pfp/${req.file.filename}`; // Σχετική διαδρομή για αποθήκευση στη βάση
+
+  try {
+    const [userRows] = await pool.query('SELECT user_id FROM user_base WHERE email = ?', [email]);
+    if (userRows.length === 0) {
+      // Σε περίπτωση που το email δεν βρεθεί, αν και θα έπρεπε να υπάρχει για συνδεδεμένο χρήστη
+      return res.status(404).json({ message: 'User not found.' });
+    }
+
+    await pool.query('UPDATE user_base SET profile_image_url = ? WHERE email = ?', [imageUrlPath, email]);
+    
+    console.log(`[Backend] Profile picture updated for ${email} to ${imageUrlPath}`);
+    res.status(200).json({ message: 'Profile picture updated successfully.', imageUrl: `http://localhost:5000${imageUrlPath}` }); // Επιστρέφουμε το πλήρες URL για άμεση χρήση από το frontend
   } catch (err) {
-    console.error("Error posting follower:", err);
-    res.status(500).send('DB Error');
+    console.error("Error updating profile picture:", err);
+    res.status(500).json({ message: 'Database error while updating profile picture.' });
   }
 });
 
@@ -375,6 +446,94 @@ app.get('/api/getAuth/:user', async (req, res) => {
   } catch (err) {
     console.error("Error during authentication:", err);
     res.status(500).send('DB Error');
+  }
+});
+
+// --- FOLLOW/UNFOLLOW ENDPOINTS (REVISED BASED ON USER INPUT) ---
+
+//GET followers for user_id
+app.get('/api/followers/:user', async (req, res) => {
+  const user = req.params.user
+
+  try {
+    const result = await pool.query(`select username, user_base.user_id from followers 
+                                      left join user_base on followers.secondary_user_id = user_base.user_id
+                                        where main_user_id = ${user};`);
+    // console.log(result[0]);
+    res.json(result[0]);
+  }
+  catch(err) {
+    res.sendStatus(500);
+    throw err;
+  }
+})
+
+//POST new follower
+app.post(`/api/postFollower`, async (req, res) => {
+  const message = req.body;
+
+  try {
+        let result = await pool.query(`SELECT user_id FROM user_base WHERE email = ?`, [message.main_user]);
+        const m_user = result[0];
+
+        result = await pool.query(`SELECT user_id FROM user_base WHERE email = ?`, [message.sec_user]);
+        const s_user = result[0];
+
+        console.log('[postFollower] main_user:',m_user[0].user_id);
+        console.log('[postFollower] sec_user:', s_user[0].user_id);
+
+        if (!m_user || !s_user) {
+            return res.status(400).send('Invalid user email(s)'); // Ή κάποιο άλλο κατάλληλο μήνυμα σφάλματος
+        }
+
+        await pool.query(`INSERT INTO followers(main_user_id, secondary_user_id) VALUES (?, ?)`, [m_user[0].user_id, s_user[0].user_id]);
+        res.send('success');
+    } catch (err) {
+        console.error('[POST /api/postFollower] Σφάλμα:', err);
+        res.status(500).send('Internal Server Error');
+    }
+
+  // try {
+  //   result = await pool.query(`select user_id from user_base where email="${message.main_user}"`);
+  //   const m_user = result[0];
+  //   result = await pool.query(`select user_id from user_base where email="${message.sec_user}"`);
+  //   const s_user = result[0];
+  //   post = await pool.query(`insert into followers(main_user_id, secondary_user_id) values (${m_user},${s_user})`)
+  //   res.send('success');
+  // }
+  // catch (err) {
+  //   res.status(500);
+  //   throw err;
+  // }
+})
+
+// POST to unfollow a user (based on emails)
+app.post(`/api/removeFollower`, async (req, res) => {
+  const { main_user_email, sec_user_email } = req.body; // main_user_email: ο χρήστης που ακολουθείται, sec_user_email: ο χρήστης που κάνει unfollow
+
+  if (!main_user_email || !sec_user_email) {
+    return res.status(400).json({ message: 'Main user email and secondary user email are required for unfollow.' });
+  }
+
+  try {
+    const [mainUserRows] = await pool.query(`SELECT user_id FROM user_base WHERE email = ?`, [main_user_email]);
+    if (mainUserRows.length === 0) return res.status(404).json({ message: `User to be unfollowed (email: ${main_user_email}) not found.` });
+    const mainUserId = mainUserRows[0].user_id;
+
+    const [secUserRows] = await pool.query(`SELECT user_id FROM user_base WHERE email = ?`, [sec_user_email]);
+    if (secUserRows.length === 0) return res.status(404).json({ message: `User initiating unfollow (email: ${sec_user_email}) not found.` });
+    const secUserId = secUserRows[0].user_id;
+
+    const [result] = await pool.query(`DELETE FROM followers WHERE main_user_id = ? AND secondary_user_id = ?`, [mainUserId, secUserId]);
+    
+    if (result.affectedRows > 0) {
+      res.status(200).json({ message: 'Successfully unfollowed user.' });
+    } else {
+      res.status(404).json({ message: 'Follow relationship not found or already unfollowed.' });
+    }
+  } catch (err) {
+    console.error("Error in /api/removeFollower:", err);
+    res.status(500).json({ message: 'Database error while attempting to unfollow user.' });
   }
 });
 
@@ -484,7 +643,7 @@ app.post('/api/recipes/:recipeId/comments', async (req, res) => {
 // Endpoints from the first file (Recipes) - Refactored to use async/await with pool
 
 // POST /api/posts
-app.post('/api/posts', upload.single('image'), async (req, res) => { // Changed to async
+app.post('/api/posts', uploadRecipeImage.single('image'), async (req, res) => { // Changed to async and uses uploadRecipeImage
   // Βεβαιώσου ότι το userEmail λαμβάνεται σωστά από το req.body
   const { title, description, difficulty, prep_time_value, prep_time_unit, category, ingredients, userEmail } = req.body; 
   const imageUrl = req.file ? `/uploads/${req.file.filename}` : null;

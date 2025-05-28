@@ -92,7 +92,7 @@ function PostCard({ post }) {
         {/* Εμφάνιση του username πάνω από την εικόνα */}
         <div className="post-author-container">
           <img 
-            src={post.author_image_url || GENERIC_PROFILE_IMAGE_URL} 
+            src={post.author_image_url ? `http://localhost:5000${post.author_image_url}` : GENERIC_PROFILE_IMAGE_URL} 
             alt={usernameToDisplay} 
             className="author-profile-pic" 
             onError={(e) => { e.target.onerror = null; e.target.src=GENERIC_PROFILE_IMAGE_URL }} // Fallback σε περίπτωση σφάλματος φόρτωσης

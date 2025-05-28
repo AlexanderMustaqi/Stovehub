@@ -14,7 +14,7 @@ function Comment({ comment }) {
   return (
     <div className="comment-item">
       <img 
-        src={comment.profile_image_url || GENERIC_PROFILE_IMAGE_URL} 
+        src={comment.profile_image_url ? `http://localhost:5000${comment.profile_image_url}` : GENERIC_PROFILE_IMAGE_URL}
         alt={comment.username} 
         className="comment-author-pic" 
         onError={(e) => { e.target.onerror = null; e.target.src=GENERIC_PROFILE_IMAGE_URL }}
@@ -218,7 +218,7 @@ function RecipeDetailPage() {
             onError={(e) => { e.target.onerror = null; e.target.src = GENERIC_PROFILE_IMAGE_URL; }}
           />
           <p className="recipe-author-text">
-            <Link to={`/profile/${recipe.user_id}`}>{recipe.posted_by || 'Άγνωστος Χρήστης'}</Link>
+            <Link to={`/user-profile/${recipe.user_id}`}>{recipe.posted_by || 'Άγνωστος Χρήστης'}</Link>
           </p>
         </div>
       )}

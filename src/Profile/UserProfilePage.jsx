@@ -1,123 +1,98 @@
 import React, { useEffect, useState, useRef, useContext } from "react"; // Προσθήκη React και hooks
-import { useParams } from "react-router-dom"; // Για να πάρουμε το userId από το URL
+import { useParams, useNavigate } from "react-router-dom"; // Για να πάρουμε το userId από το URL και για πλοήγηση
 import Navbar from "../Navbar/Navbar";
 import ChatsBar from "../ChatsBar/ChatsBar";
 import api from "../api/api";
 import { IdContext } from '../ChatsBar/ChatsBar'; // Για το ID του συνδεδεμένου χρήστη
+import './ProfilePage.css'; // Χρήση των ίδιων CSS με το ProfilePage
+import { FilterSearchOverlay } from '../Navbar/FilterSearchOverlay.jsx'; // Για την αναζήτηση
 
 export default function UserProfilePage() {
     const { userId } = useParams(); // ID του χρήστη του οποίου το προφίλ βλέπουμε
-    const loggedInUserEmail = sessionStorage.getItem('email'); // Email του συνδεδεμένου χρήστη
     const loggedInUserId = useContext(IdContext); // ID του συνδεδεμένου χρήστη
 
     const [profileData, setProfileData] = useState(null);
     const [recipes, setRecipes] = useState([]);
-    const usernameRef = useRef(null);
-    const bioRef = useRef(null);
-    const rankRef = useRef(null);
     const profileImageRef = useRef(null); // Ref για την εικόνα προφίλ
+    const [loadingProfile, setLoadingProfile] = useState(true); // Νέα κατάσταση για τη φόρτωση του προφίλ
+    const [loadingFollowData, setLoadingFollowData] = useState(true); // Κατάσταση για τη φόρτωση των follow data
+    const navigate = useNavigate();
+    const [filterVisible, setFilterVisible] = useState(false);
+    const [isFollowing, setIsFollowing] = useState(false);
+    const [followerCount, setFollowerCount] = useState(0);
 
-    // StyleSheet αντικείμενα (μπορούν να μεταφερθούν σε CSS αρχείο)
+    const defaultPfpSrc = `http://localhost:5000/uploads/pfp/default-pfp.svg`;
 
-    const pcss = {
-        display: 'flex',
-        flexDirection: 'row',
-        justifyContent: 'space-between'
-    }
-
-    const ulss = {
-        display: 'flex',
-        flexDirection: 'column',
-        justifyContent: 'space-between',
-        height: '30vh'
-    }
-
-    const Upper = {
-        border: '2px solid black',
-        display: 'flex',
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        height: '30vh'
-    }
-
-    const UserInfo = {
-        width: '80vh',
-        height: 'inherit',
-        display: 'flex',
-        flexDirection: 'column',
-        justifyContent: 'space-between',
-        alignItems: 'left'
-    }
-
-    const FollowOption = {
-        height: 'inherit',
-        alignItems: 'top',
-    }
-
-    const FollowButton = {
-        width: '200px',
-        height: '100px',
-        fontSize: '50px'
-    }
-
-    const Lower = {
-        border: '2px solid black',
-        display: 'flex',
-        flexDirection: 'column',
-        justifyContent: 'space-evenly',
-        alignItems: 'left'
-    }
-
-    const handleClickEvent = async () => {
-        if (!profileData || !profileData.email) {
-            console.error("Δεν υπάρχουν πληροφορίες email για τον χρήστη του προφίλ.");
-            return;
+    // Συνάρτηση για τη φόρτωση της λίστας των followers και τον καθορισμό του isFollowing
+    const fetchFollowDetails = async () => {
+        if (!userId) {
+            setLoadingFollowData(false);
+            return; 
         }
-        const info = {
-            main_user : loggedInUserEmail, // Email του συνδεδεμένου χρήστη
-            sec_user : profileData.email // Email του χρήστη του οποίου το προφίλ βλέπουμε
-        }
+        // Δεν χρειάζεται να περιμένουμε το loggedInUserId εδώ, καθώς ο έλεγχος isFollowing γίνεται μετά την απάντηση
+        setLoadingFollowData(true);
         try {
-            const serverResponse = await api.post(`/postFollower`, info); // Αφαίρεση trailing slash
-            if (serverResponse.data === `success`) {
-                console.log('Successfully followed user.');
-                // Εδώ μπορείς να προσθέσεις λογική για να ενημερώσεις το UI (π.χ. αλλαγή κουμπιού σε "Unfollow")
+            // Κλήση στο endpoint που επιστρέφει τη λίστα των followers του profile user
+            // Χρησιμοποιούμε το :userId από το URL params, που αντιστοιχεί στο :user του backend endpoint
+            const response = await api.get(`/followers/${userId}`); 
+            const followersList = response.data; 
+
+            if (Array.isArray(followersList)) {
+                setFollowerCount(followersList.length);
+                // Έλεγχος αν ο loggedInUserId (από το context) είναι ανάμεσα στους followers
+                if (loggedInUserId && followersList.some(follower => follower.user_id === loggedInUserId)) {
+                    setIsFollowing(true);
+                } else {
+                    setIsFollowing(false);
+                }
+            } else {
+                console.error("[UserProfilePage] /api/followers/:userId did not return an array.", followersList);
+                setFollowerCount(0);
+                setIsFollowing(false);
             }
+        } catch (err) {
+            console.error(`[UserProfilePage] Error fetching followers list for user ${userId}:`, err);
+            setFollowerCount(0); 
+            setIsFollowing(false); 
+        } finally {
+            setLoadingFollowData(false);
         }
-        catch (err) {
-            console.error("Error following user:", err);
-        }
-    }
+    };
 
     useEffect(() => {
-        if (!userId) return; // Αν δεν υπάρχει userId στο URL, μην κάνεις τίποτα
+        if (!userId) {
+            setLoadingProfile(false);
+            setLoadingFollowData(false); // Σταμάτα και το loading των follow data
+            return;
+        }
 
         const fetchUserProfileData = async () => {
+            setLoadingProfile(true);
             try {
-                // Χρησιμοποιούμε το userId από το URL για να φέρουμε τα δεδομένα
                 const response = await api.get(`/profile_info/${userId}`);
                 setProfileData(response.data);
-                if (response.data) {
-                    if (usernameRef.current) usernameRef.current.textContent = response.data.username || 'N/A';
-                    if (bioRef.current) bioRef.current.textContent = response.data.bio || 'Δεν υπάρχει bio.';
-                    if (rankRef.current) rankRef.current.textContent = response.data.rank || 'Unranked';
-                    if (profileImageRef.current) {
-                        profileImageRef.current.src = response.data.profile_image_url
-                            ? `http://localhost:5000${response.data.profile_image_url}`
-                            : `http://localhost:5000/uploads/pfp/default-pfp.svg`;
-                    }
-                } else {
-                    // Χειρισμός περίπτωσης όπου ο χρήστης δεν βρέθηκε
+                if (!response.data) {
                     setProfileData(null);
                 }
             }
             catch(err) {
-                console.error("Error fetching user profile data:", err);
+                console.error("[UserProfilePage] Error fetching user profile data:", err);
                 setProfileData(null);
+            } finally {
+                setLoadingProfile(false);
             }
         }
         fetchUserProfileData();
-    }, [userId]); // Το effect τρέχει ξανά όταν αλλάξει το userId
+
+        // Κάλεσμα για την αρχική φόρτωση των follow details μόνο αν το loggedInUserId δεν είναι undefined
+        // και το userId υπάρχει.
+        if (loggedInUserId !== undefined && userId) {
+            fetchFollowDetails();
+        } else if (userId && loggedInUserId === null) { // Αν ο χρήστης δεν είναι συνδεδεμένος, αλλά βλέπει προφίλ
+            fetchFollowDetails(); // Κάλεσε το για να πάρει τουλάχιστον το follower count
+        }
+
+    }, [userId, loggedInUserId]); // Το effect τρέχει ξανά όταν αλλάξει το userId ή το loggedInUserId
 
     useEffect(() => {
         if (!userId) return;
@@ -135,46 +110,164 @@ export default function UserProfilePage() {
         fetchUserRecipes();
     }, [userId]);
 
-    // Ένδειξη φόρτωσης ή αν ο χρήστης δεν βρέθηκε
-    if (!profileData && userId) {
+    const handleFollowToggle = async () => {
+        const loggedInUserStoredEmail = sessionStorage.getItem('email'); // Email του συνδεδεμένου χρήστη
+
+        if (!loggedInUserStoredEmail || !profileData || !profileData.email) {
+            alert("Πρέπει να είστε συνδεδεμένος ή λείπουν πληροφορίες προφίλ για αυτή την ενέργεια.");
+            return;
+        }
+        if (loggedInUserId && profileData && profileData.user_id && loggedInUserId === profileData.user_id) {
+            return; // Ο χρήστης δεν μπορεί να (un)follow τον εαυτό του
+        }
+        console.log('postFollower called with:',profileData.email, loggedInUserStoredEmail);
+        try {
+            if (isFollowing) {
+                // Λογική για Unfollow: καλεί το /api/removeFollower
+                await api.post(`/removeFollower`, { 
+                    main_user_email: profileData.email, // Email του προφίλ που βλέπουμε (ο χρήστης που ακολουθείται)
+                    sec_user_email: loggedInUserStoredEmail // Email του συνδεδεμένου χρήστη (αυτός που κάνει unfollow)
+                });
+            } else {
+                // Λογική για Follow: καλεί το /api/postFollower
+                await api.post(`/postFollower`, { 
+                    main_user: profileData.email,        // ο χρήστης που δέχεται το follow
+                    sec_user: loggedInUserStoredEmail    // ο χρήστης που κάνει follow
+                });
+            }
+            // Μετά την επιτυχή ενέργεια, ξαναφόρτωσε τη λίστα των followers για ενημέρωση
+            await fetchFollowDetails();
+        } catch (err) {
+            console.error("[UserProfilePage] Error during follow/unfollow action:", err.response ? err.response.data : err.message);
+            alert(`Σφάλμα: ${err.response?.data?.message || 'Προέκυψε ένα σφάλμα κατά την ενέργεια follow/unfollow.'}`);
+            // Σε περίπτωση σφάλματος, καλό είναι να ξαναφέρουμε την κατάσταση για να είναι συνεπής
+            await fetchFollowDetails();
+        }
+    };
+
+    const handleSearchClick = () => {
+        setFilterVisible(true);
+    };
+
+    const handleApplyFilters = criteria => {
+        const activeCriteria = {};
+        for (const key in criteria) {
+          if (criteria[key] != null && criteria[key] !== '') {
+            activeCriteria[key] = criteria[key];
+          }
+        }
+    
+        const queryParams = new URLSearchParams(activeCriteria).toString();
+        const targetPath = `/home/search-results?${queryParams}`; 
+        try {
+          navigate(targetPath); 
+        } catch (e) {
+          console.error("[UserProfilePage.jsx] Error during navigation:", e);
+        }
+        setFilterVisible(false);
+      };
+
+    // Console logs για debugging της συνθήκης του κουμπιού
+    // console.log("[UserProfilePage] Checking button visibility conditions:");
+    // console.log("  loggedInUserId:", loggedInUserId);
+    // console.log("  profileData:", profileData);
+    // console.log("  profileData?.user_id:", profileData?.user_id);
+    // if (profileData && loggedInUserId !== undefined) { // Έλεγχος και για undefined loggedInUserId
+    //     console.log("  loggedInUserId !== profileData.user_id:", loggedInUserId !== profileData.user_id);
+    // }
+
+    // Έλεγχος και για τις δύο καταστάσεις φόρτωσης
+    if (loadingProfile || (loggedInUserId !== undefined && loadingFollowData && userId)) {
         return (
             <div className='app'>
-                <Navbar />
+                <Navbar onSearchClick={handleSearchClick} />
                 <div style={{ textAlign: 'center', padding: '20px' }}>Φόρτωση προφίλ χρήστη...</div>
                 <ChatsBar />
+                <FilterSearchOverlay 
+                    visible={filterVisible} 
+                    onClose={() => setFilterVisible(false)} 
+                    onApply={handleApplyFilters} 
+                />
+            </div>
+        );
+    }
+
+    if (!profileData) { // Αν μετά τη φόρτωση το profileData είναι ακόμα null, σημαίνει ότι δεν βρέθηκε
+        return (
+            <div className='app'>
+                <Navbar onSearchClick={handleSearchClick} />
+                <div style={{ textAlign: 'center', padding: '20px' }}>Το προφίλ χρήστη δεν βρέθηκε.</div>
+                <ChatsBar />
+                <FilterSearchOverlay 
+                    visible={filterVisible} 
+                    onClose={() => setFilterVisible(false)} 
+                    onApply={handleApplyFilters} 
+                />
             </div>
         );
     }
 
     return(
         <div className='app'>
-            <Navbar></Navbar>
-            <div style={pcss}> 
-                <div style={ulss}>
-                    <div style={Upper}>
-                        <img ref={profileImageRef} src={`http://localhost:5000/uploads/pfp/default-pfp.svg`} alt="Profile" style={{width: '30vh', height: '30vh', objectFit: 'cover', border: '1px solid #ccc', borderRadius: '8px'}} />
-                        <div style={UserInfo}>
-                            <h5 ref={usernameRef}>Username</h5>
-                            <h5 ref={bioRef}>Bio</h5>
-                            <h5 ref={rankRef}>Rank</h5>
+            <Navbar onSearchClick={handleSearchClick} />
+            <div className="profile-page-container"> 
+                <div className="profile-content">
+                    <div className="profile-upper-section">
+                        <div className="profile-image-container">
+                            <img 
+                                //ref={profileImageRef} 
+                                className="profile-image"
+                                src={
+                                    profileData?.profile_image_url
+                                        ? `http://localhost:5000${profileData.profile_image_url}`
+                                        : defaultPfpSrc
+                                } 
+                                alt="Profile" 
+                                onError={(e) => {
+                                    e.target.onerror = null; 
+                                    e.target.src = defaultPfpSrc;
+                                }}
+                            />
+                        </div>
+                        <div className="profile-user-info">
+                            <h5>{profileData?.username || 'Username'}</h5>
+                            <h5>{profileData?.bio || 'Bio'}</h5>
+                            <h5>{profileData?.rank || 'Rank'}</h5>
+                            {loadingFollowData && loggedInUserId !== undefined && userId ? (
+                                <p className="profile-follower-count">Loading followers...</p>
+                            ) : (
+                                <p className="profile-follower-count">Followers: {followerCount}</p>
+                            )}
                         </div>
                         {/* Έλεγχος για να μην εμφανίζεται το κουμπί follow αν ο χρήστης βλέπει το δικό του προφίλ μέσω αυτού του URL */}
-                        {loggedInUserId && profileData && parseInt(loggedInUserId) !== parseInt(profileData.user_id) && (
-                            <div style={FollowOption}>
-                                <button style={FollowButton} onClick={handleClickEvent}>Follow</button>
-                            </div>
+                        {!loadingFollowData && loggedInUserId && profileData && profileData.user_id && loggedInUserId !== profileData.user_id && (
+                            // Εμφάνιση κουμπιού μόνο αν δεν φορτώνουν τα follow data ΚΑΙ οι υπόλοιπες συνθήκες ισχύουν
+                                <div className="profile-follow-button-container">
+                                    <button className={`profile-follow-button ${isFollowing ? 'following' : ''}`} onClick={handleFollowToggle}>
+                                        {isFollowing ? 'Unfollow' : 'Follow'}
+                                    </button>
+                                </div>
+                            )
+                        }
+                    </div>
+                    <div className="profile-recipes-section">
+                        <h2>Συνταγές Χρήστη</h2>
+                        {recipes.length > 0 ? (
+                            <ul className="profile-recipes-list">
+                                {recipes.map((recipe) => <li key={recipe.id}>{recipe.title || 'Recipe without title'}</li>)}
+                            </ul>
+                        ) : (
+                            <p>Αυτός ο χρήστης δεν έχει δημοσιεύσει συνταγές.</p>
                         )}
                     </div>
-                    <ul style={Lower}>
-                        {recipes.length > 0 ? (
-                            recipes.map((recipe) => <li key={recipe.id}>{recipe.title || 'Recipe without title'}</li>)
-                        ) : (
-                            <li>Αυτός ο χρήστης δεν έχει δημοσιεύσει συνταγές.</li>
-                        )}
-                    </ul>
                 </div>
                 <ChatsBar />
             </div>
+            <FilterSearchOverlay 
+                visible={filterVisible} 
+                onClose={() => setFilterVisible(false)} 
+                onApply={handleApplyFilters} 
+            />
         </div>
     )
 }
