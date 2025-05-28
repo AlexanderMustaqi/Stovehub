@@ -36,7 +36,6 @@ function Profile() {
         padding: "10px",
         marginBottom: '5px',
         width: "100%",
-        backgroundColor: "",
         textAlign: 'center',
         cursor: 'pointer',
         textDecoration: 'none',

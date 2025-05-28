@@ -6,7 +6,7 @@ import ThumbsDownIcon from './assets/thumbs-down-outline.svg';
 import api from '../api/api'; // Υποθέτοντας ότι έχεις ένα api instance
 import { IdContext } from '../ChatsBar/ChatsBar'; // Για να πάρουμε το user_id του συνδεδεμένου χρήστη
 
-const GENERIC_PROFILE_IMAGE_URL = 'http://localhost:5000/uploads/pfp/default-pfp.svg';
+// const GENERIC_PROFILE_IMAGE_URL = 'http://localhost:5000/uploads/pfp/default-pfp.svg';
 
 function PostCard({ post }) {
   const usernameToDisplay = post.posted_by || 'Anonymous';
@@ -92,7 +92,7 @@ function PostCard({ post }) {
         {/* Εμφάνιση του username πάνω από την εικόνα */}
         <div className="post-author-container">
           <img 
-            src={post.author_image_url || GENERIC_PROFILE_IMAGE_URL} 
+            src={post.author_image_url} 
             alt={usernameToDisplay} 
             className="author-profile-pic" 
             onError={(e) => { e.target.onerror = null; e.target.src=GENERIC_PROFILE_IMAGE_URL }} // Fallback σε περίπτωση σφάλματος φόρτωσης

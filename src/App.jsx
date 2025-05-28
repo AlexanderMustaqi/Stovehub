@@ -14,19 +14,21 @@ function App() {
 
     const [userType, setuserType] = useState("Registered");
 
+
     return(
-        <UserContext.Provider value={userType}>
-            <UserUpdateContext.Provider value={setuserType}>
-                <Router>
-                    <Routes>
-                        <Route path="/" element={<Login /> }></Route>
-                        <Route path="/home/*" element={<Home />}></Route>
-                        <Route path="/profile/" element={<ProfilePage />}></Route>
-                        <Route path="/gallery/" element={<GalleryPage />}></Route>
-                    </Routes>
-                </Router>
-            </UserUpdateContext.Provider>
-        </UserContext.Provider>
+         <UserContext.Provider value={userType}>
+             <UserUpdateContext.Provider value={setuserType}>
+                 <Router>
+                     <Routes>
+                         <Route path="/" element={<Login /> }></Route>
+                         <Route path="/home/*" element={<Home />}></Route>
+                         <Route path="/profile/" element={<ProfilePage />}></Route>
+                         <Route path="/gallery/" element={<GalleryPage />}></Route>
+                     </Routes>
+                 </Router>
+             </UserUpdateContext.Provider>
+         </UserContext.Provider>
+    
     )
 }
 

@@ -1,50 +1,89 @@
-import { useState } from "react"
+import { useRef, useState } from "react"
 
 function ChatVote() {
 
-    const [win, setWin] = useState([]);
+    const [ballot, setBallot] = useState(false);
+    const [candidates, setCandidates] = useState([]);
 
-    function handleVoteEvent() {
-        setWin([...win, 
-            <div 
-            style={{
-                position: 'absolute',
-                width: '200px',
-                height: '200px',
-                // border: '1px solid black',
-                top: '0',
-                bottom: '0',
-                left: '0',
-                right: '0',
-                background: 'antiquewhite'
-            }}>
-                <div 
-                style={{
-                    height: '10%',
-                    width: 'inherit',
-                    borderBottom: '1px solid black',
-                    padding: '0',
-                    display: 'flex',
-                    justifyContent: 'space-between'
-                }}>
-                    UPPER BAR
-                    <button onClick={() => {setWin([])}}>X</button>
-                </div>
-                <div 
-                style={{
-                    height: '90%',
-                    width: 'inherit',
-                    // border: '1px solid black',
-                }}>
-                    LOWER BAR
-                </div>
-            </div>
-        ])
+    const nameRef = useRef(null);
+    const candidateRef = useRef(null);
+
+    const formssh = {
+        display: "flex",
+        flexDirection: "column",
+    }
+
+    const candidateSSH = {
+
+    }
+
+    const CCSSH = {
+        
+    }
+
+    const buttonSSH = {
+        width: "50%"
+    }
+
+    const handleVoteEvent = () => {
+        setCandidates([]);
+        setBallot(!ballot);
+    }
+
+    const handleCancelBallotEvent = (e) => {
+        e.preventDefault();
+        handleVoteEvent();
+    }
+
+    const handleAddCandidateEvent = () => {
+        const newCandidate = candidateRef.current.value;
+        setCandidates(c => [...c, newCandidate]);
+        candidateRef.current.value = '';
+    }
+
+    const handleConfirmBallotEvent = (e) => {
+        e.preventDefault();
+        const message = {
+            name: nameRef.current.value,
+            candidates: candidates
+        }
+        const postBallot = async () => {
+            try {
+                const ServerResponse = await api.post(`/ballot`, JSON.stringify(message));
+            }
+            catch(err) {
+                throw err;
+            }
+        }   
+        postBallot();
+        handleVoteEvent();
+    }
+
+    const handleRemoveCandidateEvent = (index) => {
+        
     }
 
     return <>
-        {win}
         <button onClick={handleVoteEvent}>Vote</button>
+        {ballot && 
+        (
+        <div className="overlay">
+            <form type="submit" style={formssh}>
+                <input ref={nameRef} type="text" placeholder="Enter Ballot Name" required />
+                <div style={candidateSSH}>
+                    <input ref={candidateRef} type="text" placeholder="Enter a candidate" />
+                    <button type="button" onClick={handleAddCandidateEvent}>Add</button>
+                </div>
+                <ul>
+                    {candidates.map((e, i) => <li key={i} onClick={handleRemoveCandidateEvent} id={e}> {e} </li>)}
+                </ul>
+                <div style={CCSSH}>
+                    <button type="submit" style={buttonSSH} onClick={handleConfirmBallotEvent}>Confirm</button>
+                    <button type="button" style={buttonSSH} onClick={handleCancelBallotEvent}>Cancel</button>
+                </div>
+            </form>
+        </div>
+        )}
     </>
 }
 
