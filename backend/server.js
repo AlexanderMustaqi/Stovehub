@@ -61,6 +61,34 @@ class ballot{
   }
 }
 
+class ballots{
+  ballots = [];
+
+  addBallot = (b) => {
+    this.ballots.push(b);
+  }
+
+  removeBallot = (index) => {
+    this.ballots.pop(index);
+  }
+
+  lastIndex = () => {
+    return (this.ballots.length-1);
+  }
+
+  vote = (index, name) => {
+
+    this.ballots[index].forEach((e) => {if (e.name == name) {e.plus()}})
+  }
+  
+  winner = (index) => {
+
+    const Winner = ballots[index].winner();
+    this.ballots[index].pop(index);
+    return Winner;
+  }
+}
+
 //Database Connection
 const pool = mysql.createPool({
   host:'localhost',
@@ -74,7 +102,7 @@ const pool = mysql.createPool({
 
 //WEBSOCKET SERVER
 
-let ballots = []
+const Ballots = new ballots();
 
 const wss = new webSocket.Server({ server:server })
 
@@ -111,22 +139,50 @@ wss.on('connection', async (ws) => {
       ClientResponse.candidates.forEach((e) => {
         new_ballot.addCandidate(e);
       })
-      ballots.push(new_ballot)
+      Ballots.addBallot(new_ballot)
       const ServerResponse = {
         type: 'ballot index',
-        message: ballots.length-1
+        message: Ballots.length-1
+      }
+      try {
+        const result = await pool.query(`update chat set chat_settings = "ballot" where chat_id = ${chat_id}`)
+      }
+      catch(err) {
+        ServerResponse = {
+          type: 'error',
+          message: err
+        }
+        throw err;
       }
       ws.send(JSON.stringify(ServerResponse)) //Sending Ballot Index
     }
     else if(ClientResponse.type == 'winner') {
-      const ServerResponse = {
-        type: 'winner',
-        message: ballots[ClientResponse.index].winner()
+      const Winner = Ballots.winner(ClientResponse.index)
+      try {
+        const result = await pool.query(`call postMessage("Winner: ${Winner}",18,${chat_id})`)
+        result = await pool.query(`update chat set chat_settings="none" where chat_id = ${chat_id}`)
+        const message = {
+          message: `Winner: ${Winner}`,
+          user_id: 18
+        }
+        ServerRequest = {
+          type: 'new',
+          message: message
+        };
+        ws.send(JSON.stringify(ServerRequest))
       }
-      ws.send(JSON.stringify(ServerResponse)) //Sending Ballot Winner
+      catch(err) {
+        const ServerResponse = {
+          type: 'error',
+          message: err
+        }
+        ws.send(JSON.stringify(ServerResponse))
+        throw err;
+        
+      }
     }
     else if(ClientResponse.type == 'vote') {
-      ballots[ClientResponse.index].candidates.forEach((e) => {if (e.name == `${ClientResponse.name}`) e.plus()})
+      Ballots.vote(ClientResponse.index, ClientResponse.name)
     }
     else {
       try {

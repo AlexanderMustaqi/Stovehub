@@ -16,6 +16,7 @@ function ChatWin({selected : selected, setSelected: setSelected}) {
     const [messages, setMessages] = useState([]);
     const [trigger, setTrigger] = useState(0);
     const [socket, setSocket] = useState(null);
+    const [ballotIndex, setBallotIndex] = useState(0);
     const chatRef = useRef(null);
     const ws = useRef(null);
     
@@ -47,10 +48,13 @@ function ChatWin({selected : selected, setSelected: setSelected}) {
                     // console.log(ServerResponse);
                     setMessages(ServerResponse.message); 
                 }
+               else  if (ServerResponse.type == 'ballot index') {
+                    setBallotIndex(ServerResponse.message);
+                }
                 else {
-                    // console.log(ServerResponse);
                     setMessages(s => [...s, ServerResponse.message])
                 }
+                
             }
 
             ws.current.onclose = () => {
@@ -88,7 +92,7 @@ function ChatWin({selected : selected, setSelected: setSelected}) {
                     {selected[1]}
                 </div>
                 <div>
-                    <ChatVote selected={selected} />
+                    <ChatVote selected={selected} ballotIndex={ballotIndex} setBallotIndex={setBallotIndex} />
                     <button onClick={handleXClickEvent}>X</button>
                 </div>
             </div>
