@@ -28,8 +28,9 @@ class RecipeModel {
      * @param {string} recipeData.category
      * @param {string} recipeData.ingredients
      * @param {string|null} recipeData.imageUrl
-     * @param {string} recipeData.userEmail - Email of the user posting the recipe.
-     * @returns {Promise<{userId: number, username: string}>} - User ID and username of the poster.
+     * @param {string} recipeData.userEmail 
+     * @returns {Promise<{insertId: number, userId: number, username: string}>}
+     * @returns {Promise<{userId: number, username: string}>} 
      */
     async createRecipe(recipeData) {
         const { title, description, difficulty, prep_time_value, prep_time_unit, category, ingredients, imageUrl, userEmail } = recipeData;
@@ -41,11 +42,11 @@ class RecipeModel {
         const userId = userRows[0].user_id;
         const username = userRows[0].username;
 
-        await this.dbService.query(
+        const [dbResult] = await this.dbService.query(
             `INSERT INTO recipes (title, description, difficulty, prep_time_value, prep_time_unit, category, ingredients, image_url, user_id, posted_by) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
             [title, description, difficulty, prep_time_value, prep_time_unit, category, ingredients, imageUrl, userId, username]
         );
-        return { userId, username };
+        return { insertId: dbResult.insertId, userId, username };
     }
 
     /**
@@ -181,13 +182,9 @@ class RecipeModel {
         };
     }
 
-    /**
-     * Handles adding, updating, or removing a recipe reaction (like/dislike).
-     * @param {number} recipeId - The ID of the recipe.
-     * @param {number} userId - The ID of the user reacting.
-     * @param {'like'|'dislike'|'none'} reactionType - The type of reaction. 'none' to remove.
-     * @returns {Promise<string>} A message indicating the action performed.
-     */
+    
+    
+    //Handles adding, updating, or removing a recipe reaction (like/dislike)
     async handleRecipeReaction(recipeId, userId, reactionType) {
         const [existingReactions] = await this.dbService.query(
             'SELECT id, reaction FROM recipe_reactions WHERE recipe_id = ? AND user_id = ?',

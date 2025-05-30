@@ -8,9 +8,9 @@ import { ballots, ballot, candidate } from './src/models/VotingSystem.js';
 
 // Import the new service classes
 import DbService from './src/services/DbService.js';
-import UserModel from './src/services/UserModel.js';
-import RecipeModel from './src/services/RecipeModel.js';
-import ChatModel from './src/services/ChatModel.js';
+import UserModel from './src/models/UserModel.js';
+import RecipeModel from './src/models/RecipeModel.js';
+import ChatModel from './src/models/ChatModel.js';
 import AuthService from './src/services/AuthService.js';
 import FileUploaderService from './src/services/FileUploaderService.js';
 import { Admin } from './src/models/Admin.js';
@@ -72,31 +72,25 @@ app.post('/api/login', async (req, res) => {
             return res.status(400).json({ message: "Email and password are required." });
         }
 
-        // Χρησιμοποιήστε το authService για την αυθεντικοποίηση
+        
         const isAuthenticated = await authService.authenticateUser(email, password);
 
         if (isAuthenticated) {
-            // Αν η αυθεντικοποίηση είναι επιτυχής, πάρτε το user_id
-            // (Το userModel είναι ήδη διαθέσιμο στο app.locals ή μπορείτε να το χρησιμοποιήσετε απευθείας εδώ)
+        
             const userId = await app.locals.userModel.getUserIdByEmail(email);
-            if (!userId) {
-                 // Αυτό δεν θα έπρεπε να συμβεί αν η authenticateUser πέρασε
+            if (!userId) { 
                  console.error(`User ${email} authenticated but ID not found.`);
                  return res.status(500).json({ message: "Authentication inconsistency." });
             }
 
             // Δημιουργία JWT Token
-            // Βεβαιωθείτε ότι το JWT_SECRET είναι το ίδιο με αυτό στο authMiddleware.js
-            const JWT_SECRET_FOR_SIGNING = process.env.JWT_SECRET || 'KeyForAuth'; // Αυτό πρέπει να είναι το ίδιο με το secret που χρησιμοποιείται στο authMiddleware
+            const JWT_SECRET_FOR_SIGNING = process.env.JWT_SECRET || 'KeyForAuth'; 
             const token = jwt.sign(
-                { userId: userId /* Μπορείτε να προσθέσετε και άλλα δεδομένα όπως το rank αν θέλετε, αλλά το userId αρκεί */ },
+                { userId: userId  },
                 JWT_SECRET_FOR_SIGNING,
-                { expiresIn: '1h' } // π.χ. λήξη σε 1 ώρα, ή '7d' για 7 ημέρες
+                { expiresIn: '1h' } 
             );
-
-            // Επιστρέψτε το token στον client
-            // Ο client θα πρέπει να το αποθηκεύσει (π.χ., σε localStorage)
-            // και να το στέλνει σε κάθε αίτημα στο Authorization header.
+            // Επιστροφή του token και του userId
             res.json({ message: "Login successful", token: token, userId: userId });
         } else {
             res.status(401).json({ message: "Invalid email or password." });
@@ -109,14 +103,14 @@ app.post('/api/login', async (req, res) => {
 
 // Make UserModel available to middlewares via req.app.locals
 app.locals.userModel = userModel;
-app.locals.dbService = dbService; // Αν χρειαστεί και το dbService απευθείας
+app.locals.dbService = dbService; 
 
-// Expose uploads directory statically
+
 app.use('/uploads', express.static(path.join(process.cwd(), 'uploads')));
 
 // Test image route (kept from the first file)
 app.get('/test-image', (req, res) => {
-    // Note: This file might not exist, ensure 'uploads/1746785144181.jpg' is present
+    
     res.sendFile(path.join(process.cwd(), 'uploads', '1746785144181.jpg'));
 });
 
@@ -192,7 +186,6 @@ wss.on('connection', async (ws) => {
                 Ballots.vote(ClientResponse.index, ClientResponse.name)
                 }
                 else {
-                // Assuming clientResponse.message contains { message: '...', user_id: ... }
                 const { message, user_id } = ClientResponse.message;
                 await chatModel.postMessage(message, user_id, chat_id);
 
@@ -644,7 +637,7 @@ app.put('/api/admin/users/:targetUserId/edit', authMiddleware, isAdminMiddleware
         }
 
         // Δημιουργία instance της κλάσης Admin
-        // Το dbService είναι ήδη αρχικοποιημένο και διαθέσιμο (π.χ. app.locals.dbService ή απευθείας)
+        // και κλήση της μεθόδου editUserProfile
         const adminInstance = new Admin(dbService, adminUserData);
 
         const result = await adminInstance.editUserProfile(targetUserId, newData);
@@ -769,9 +762,6 @@ app.get('/api/admin/reports', authMiddleware, isAdminMiddleware, async (req, res
 // Endpoint για να παίρνει ο admin μια λίστα χρηστών
 app.get('/api/admin/users', authMiddleware, isAdminMiddleware, async (req, res) => {
     try {
-        // Χρησιμοποιούμε την υπάρχουσα μέθοδο userModel.getAllUsers()
-        // Βεβαιωθείτε ότι επιστρέφει τα πεδία που χρειάζεται ο admin
-        // (user_id, username, email, rank, etc.)
         const users = await userModel.getAllUsers();
         res.status(200).json(users);
     } catch (err) {

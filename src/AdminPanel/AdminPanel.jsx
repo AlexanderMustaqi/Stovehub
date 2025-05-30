@@ -1,4 +1,3 @@
-// c:\Users\Panos\Desktop\TL_kwdikas\Stovehub\src\AdminPanel\AdminPanel.jsx
 import React, { useState, useEffect, useContext } from 'react';
 import { Link } from 'react-router-dom';
 import api from '../api/api.js';
@@ -15,8 +14,6 @@ function ReportItem({ report, onHandleReport }) {
       return <Link to={`/home/recipes/${report.reported_recipe_id}`} target="_blank" rel="noopener noreferrer">Recipe: {report.reported_recipe_title || `ID ${report.reported_recipe_id}`}</Link>;
     }
     if (report.reported_comment_id) {
-      // Για σχόλια, ιδανικά θα είχαμε και το recipe_id για να φτιάξουμε το link
-      // Προς το παρόν, απλά εμφανίζουμε το κείμενο
       return `Comment: "${report.reported_comment_snippet}..." (ID: ${report.reported_comment_id})`;
     }
     if (report.reported_user_id) {
@@ -32,7 +29,6 @@ function ReportItem({ report, onHandleReport }) {
     }
     // Επιτρέπουμε την υποβολή ακόμα κι αν δεν αλλάξει η ενέργεια, για ενημέρωση σημειώσεων
     onHandleReport(report.report_id, adminAction || report.status, adminNotes);
-    // Δεν κλείνουμε το modal αυτόματα, για να μπορεί ο admin να δει την αλλαγή ή να κάνει περαιτέρω ενέργειες
   };
 
   return (
@@ -50,7 +46,7 @@ function ReportItem({ report, onHandleReport }) {
         </button>
       </div>
       {showDetails && (
-        <div className="report-details-modal"> {/* Αυτό δεν είναι πλέον modal, αλλά inline details */}
+        <div className="report-details-modal"> 
           <h4>Handle Report ID: {report.report_id}</h4>
           <div className="admin-actions">
             <label htmlFor={`action-select-${report.report_id}`}>Set Status:</label>
@@ -59,8 +55,6 @@ function ReportItem({ report, onHandleReport }) {
               <option value="resolved">Resolved</option>
               <option value="dismissed">Dismissed</option>
               <option value="action_taken">Action Taken</option>
-              {/* Μπορεί να θέλεις να προσθέσεις ξανά το 'pending' αν ο admin θέλει να το επαναφέρει */}
-              {/* <option value="pending">Pending</option> */}
             </select>
             <label htmlFor={`admin-notes-${report.report_id}`}>Admin Notes:</label>
             <textarea id={`admin-notes-${report.report_id}`} value={adminNotes} onChange={(e) => setAdminNotes(e.target.value)} placeholder="Optional notes for this action..." />
@@ -130,7 +124,7 @@ function AdminPanel() {
     console.log(`[AdminPanel] Handling report ${reportId} with action: ${action}`);
     try {
       await api.post(`/admin/reports/${reportId}/handle`,
-        { action, adminNotes }, // Το payload περιλαμβάνει το action και τα adminNotes
+        { action, adminNotes },
         { headers: { Authorization: `Bearer ${token}` } }
       );
       alert(`Report ${reportId} status updated to ${action}.`);

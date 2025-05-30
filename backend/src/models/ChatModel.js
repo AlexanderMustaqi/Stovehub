@@ -9,10 +9,7 @@ class ChatModel {
      */
     dbService;
 
-    /**
-     * Creates an instance of ChatModel.
-     * @param {DbService} dbService - The database service instance.
-     */
+   
     constructor(dbService) {
         this.dbService = dbService;
     }
@@ -54,24 +51,12 @@ class ChatModel {
         return rows;
     }
 
-    /**
-     * Posts a new message to a chat.
-     * @param {string} messageText - The message content.
-     * @param {number} userId - The ID of the user sending the message.
-     * @param {number} chatId - The ID of the chat.
-     * @returns {Promise<void>}
-     */
+    
     async postMessage(messageText, userId, chatId) {
         await this.dbService.query(`CALL PostMessage(?, ?, ?)`, [messageText, userId, chatId]);
     }
 
-    /**
-     * Creates a new chat.
-     * @param {string} chatName - Name of the new chat.
-     * @param {Array<number>} chatUsers - Array of user IDs to include in the chat.
-     * @param {string} userEmail - Email of the user creating the chat (also added to chat_user).
-     * @returns {Promise<void>}
-     */
+   
     async createChat(chatName, chatUsers, userEmail) {
         let connection;
         try {

@@ -5,7 +5,6 @@ import api from '../api/api';
 import { IdContext } from '../ChatsBar/ChatsBar';
 
 
-// Αν η HomePage προορίζεται μόνο για την εμφάνιση όλων των posts, δεν χρειάζεται το prop 'filters'
 function HomePage() {
   const [posts, setPosts] = useState([]);
   const currentUserId = useContext(IdContext);
@@ -23,7 +22,7 @@ function HomePage() {
       }
     };
     fetchAllPosts();
-  }, [currentUserId]); // Το useEffect θα εκτελεστεί ξανά αν αλλάξει το currentUserId (π.χ. μετά από login)
+  }, [currentUserId]); 
 
   return (
     <div className="home-page">

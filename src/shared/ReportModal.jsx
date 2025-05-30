@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import './ReportModal.css'; // Θα δημιουργήσουμε αυτό το αρχείο CSS
+import './ReportModal.css'; 
 
 const REPORT_REASONS = [
   "Spam",
@@ -18,13 +18,13 @@ function ReportModal({ show, onClose, onSubmit, itemType, itemId }) {
   const [error, setError] = useState('');
 
   useEffect(() => {
-    // Reset form when modal is shown for a new item
+    
     if (show) {
       setReason('');
       setNotes('');
       setError('');
     }
-  }, [show, itemId]); // Reset if show changes or if it's for a new item
+  }, [show, itemId]); 
 
   const handleSubmit = (e) => {
     e.preventDefault();
