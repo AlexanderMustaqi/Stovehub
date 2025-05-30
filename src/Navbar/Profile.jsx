@@ -4,9 +4,8 @@ import ProfileIcon from './assets/person-outline.svg'
 import { UserContext } from '../App';
 
 function Profile() {
-
     const [popUpFlag, setpopUpFlag] = useState(false);
-    const userType = useContext(UserContext);
+    const { currentUser, handleLogout: contextLogout } = useContext(UserContext); // Παίρνουμε το currentUser και τη συνάρτηση logout
     const nav = useNavigate();
 
     const stylesheet1 = 
@@ -48,10 +47,17 @@ function Profile() {
     }
 
     const handleProfileClicked = () => {
+        setpopUpFlag(false); // Κλείσιμο του pop-up
         nav("/profile");
     }
     const handleLogOutClicked = () => {
+        setpopUpFlag(false); // Κλείσιμο του pop-up
+        contextLogout(); // Κλήση της συνάρτησης logout από το context
         nav("/");
+    }
+    const handleAdminPanelClicked = () => {
+        setpopUpFlag(false); // Κλείσιμο του pop-up
+        nav("/home/admin-panel"); // Αλλαγή της διαδρομής
     }
     const handleSettingsClicked = () => {
         alert("Work in Progress");
@@ -62,9 +68,12 @@ function Profile() {
             
             {popUpFlag && (
                <div style={stylesheet2}>
-                    {(userType) ?
+                    {(currentUser) ? // Έλεγχos αν υπάρχει currentUser (αν είναι συνδεδεμένος)
                     (<div style={stylesheet1}>
                         <button style={stylesheet3} onClick={handleProfileClicked}>Profile</button>
+                        {currentUser.rank === 'admin' && ( // Εμφάνιση μόνο αν είναι admin
+                            <button style={stylesheet3} onClick={handleAdminPanelClicked}>Admin Panel</button>
+                        )}
                         <button style={stylesheet3} onClick={handleSettingsClicked}>Settings</button>
                         <button style={stylesheet3} onClick={handleLogOutClicked}>Logout</button>
                     </div>)

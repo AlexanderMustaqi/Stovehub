@@ -148,6 +148,33 @@
 .post-author {
   margin: 0;
   font-size: 0.9em;
-  font-weight: bold; /* Ίσως θέλεις το όνομα να είναι έντονο */
+  font-weight: bold; 
   color: var(--postcard-text-color);
+}
+
+/* === Report Button === */
+.postcard-report-button {
+  position: absolute;
+  top: 12px; /* Προσαρμόστε ανάλογα με το padding του post-author-container */
+  right: 12px;
+  background-color: transparent;
+  border: none;
+  padding: 6px;
+  cursor: pointer;
+  border-radius: 50%; /* Κάνει το κουμπί κυκλικό */
+  display: inline-flex; /* Βοηθά στην ευθυγράμμιση του εικονιδίου */
+  align-items: center;
+  justify-content: center;
+  z-index: 5; /* Εξασφαλίζει ότι είναι πάνω από άλλο περιεχόμενο αν χρειαστεί */
+  transition: background-color 0.2s ease;
+}
+
+.postcard-report-button img {
+  width: 22px; /* Προσαρμόστε το μέγεθος όπως χρειάζεται */
+  height: 22px;
+  display: block; /* Αποτρέπει επιπλέον κενό κάτω από την εικόνα */
+}
+
+.postcard-report-button:hover {
+  background-color: rgba(0, 0, 0, 0.08); /* Διακριτικό εφέ κατά το hover */
 }

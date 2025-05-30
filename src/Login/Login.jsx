@@ -1,6 +1,6 @@
 import { useState,useRef, useEffect, useContext } from "react"
 import { useNavigate, Link } from 'react-router-dom' 
-import { UserUpdateContext } from '../App.jsx'
+import { UserContext } from '../App.jsx' // Διόρθωση: Εισαγωγή του UserContext αντί του UserUpdateContext
 import api from "../api/api";
 
 const root = {
@@ -29,13 +29,15 @@ function Login() {
     const passwordRef = useRef(null);
     const emailRef = useRef(null);
     const navigate = useNavigate(); // Χρήση του useNavigate
-    const setuserType = useContext(UserUpdateContext)
+    const { handleLogin: contextHandleLogin, currentUser } = useContext(UserContext); // Χρήση του UserContext για να πάρουμε το handleLogin
 
     useEffect(() => {
-        sessionStorage.setItem('email', ''); //Incase user enters as an 
-        sessionStorage.setItem('ut', false);
-        setuserType(false);
-    }, [])
+        // Αν υπάρχει ήδη χρήστης συνδεδεμένος, πήγαινε στο home
+        if (currentUser) {
+            navigate('/home');
+        }
+        // Δεν χρειάζεται να καθαρίζουμε το sessionStorage εδώ, το App.jsx το χειρίζεται.
+    }, [currentUser, navigate])
 
     const resetValues = () => {
         passwordRef.current.value = '';
@@ -48,35 +50,29 @@ function Login() {
         setLoginFlag(!login_flag);
     }
 
-    const handleLogin = (e) => {
+    const handleLoginSubmit = async (e) => { // Μετονομασία για αποφυγή σύγκρουσης με το contextHandleLogin
         e.preventDefault();
         const email = emailRef.current.value;
         const password = passwordRef.current.value;
-        const clientRequest = 
-        {
-            email: email,
-            password: password
-        }
-        //request server for auth
-        const fetchData = async (clientRequest) => {
-            clientRequest = JSON.stringify(clientRequest);
-            const ServerResponse = await api.get(`/getAuth/${clientRequest}`);
-            setAuth(ServerResponse.data);
-        }
-        fetchData(clientRequest);
-    }
 
-    useEffect(() => {
-        if (auth == 'Found') {
-            sessionStorage.setItem('email', emailRef.current.value)
-            sessionStorage.setItem('ut', true);
-            setuserType(true);
-            navigate('/home'); // Χρήση του navigate
+        try {
+            const loginSuccess = await contextHandleLogin(email, password); // Κλήση της συνάρτησης από το App.jsx
+            if (loginSuccess) {
+                // Η πλοήγηση στο /home θα γίνει αυτόματα από το useEffect παραπάνω
+                // όταν το currentUser ενημερωθεί.
+                // navigate('/home'); // Δεν χρειάζεται πλέον εδώ
+            } else {
+                // Το contextHandleLogin θα έχει ήδη κάνει console.error
+                // και θα έχει επιστρέψει false.
+                alert('Login failed. Please check your email and password.');
+                setAuth('Not Found'); // Ενημέρωση του auth state για εμφάνιση μηνύματος αν χρειάζεται
+            }
+        } catch (err) {
+            console.error("Login component error during submit:", err);
+            alert('An unexpected error occurred during login.');
+            setAuth('Error'); // Ενημέρωση του auth state για εμφάνιση μηνύματος αν χρειάζεται
         }
-        else if(auth ==  'Not Found'){
-            alert(`Incorrect Email/Password`);
-        }
-    }, [auth])
+    }; // Αφαιρέθηκε το `, [auth]`
 
     const handleRegister = (e) => {
         e.preventDefault();
@@ -111,7 +107,8 @@ function Login() {
     }
 
     const handleGuestClickEvent = () => {
-        setuserType(false);
+        // Για guest, απλά πλοηγούμαστε. Το App.jsx θα έχει currentUser=null.
+        // Δεν χρειάζεται να καλέσουμε setuserType εδώ.
         navigate('/home'); // Χρήση του navigate
     }
     
@@ -122,7 +119,7 @@ function Login() {
                     <h1>Login</h1>
                     <input ref={emailRef} type="email" placeholder="Enter Email" required />
                     <input ref={passwordRef} type="password" placeholder="Enter Password" required />
-                    <button type='submit' onClick={handleLogin}>Login</button>
+                    <button type='submit' onClick={handleLoginSubmit}>Login</button>
                     <button type='button' onClick={changeWin}>Register</button>
                 </form>
                     <button onClick={handleGuestClickEvent}>Enter as a Guest</button>

@@ -1,5 +1,5 @@
-import React, { useState, useEffect, createContext } from 'react';
-import { Routes, Route, useNavigate } from 'react-router-dom';
+import React, { useContext, useState, useEffect } from 'react'; // Προσθήκη useState, useEffect
+import { Routes, Route, Navigate, useNavigate } from 'react-router-dom'; // Προσθήκη useNavigate
 import Navbar from "./Navbar/Navbar.jsx";
 import ChatsBar from "./ChatsBar/ChatsBar.jsx";
 import AddPostButton from './AddPostButton/AddPostButton.jsx';
@@ -9,12 +9,15 @@ import RecipeDetailPage from './RecipeDetailPage/RecipeDetailPage.jsx';
 import { FilterSearchOverlay } from './Navbar/FilterSearchOverlay.jsx';
 import AddPostModal from './AddPostButton/AddPostModal.jsx';
 import api from './api/api.js';
+import AdminPanel from './AdminPanel/AdminPanel.jsx'; // Εισαγωγή του AdminPanel
+import { UserContext } from './App.jsx'; // Για έλεγχο του rank του χρήστη
 
 import { IdContext } from './ChatsBar/ChatsBar.jsx'; 
 
 // Το AppContent περιέχει τη λογική που χρειάζεται το useNavigate
 function AppContent() {
   const [filterVisible, setFilterVisible] = useState(false);
+  const { currentUser } = useContext(UserContext); // Πρόσβαση στο currentUser για έλεγχο rank
   const [modalVisible, setModalVisible] = useState(false);
   const [currentUserId, setCurrentUserId] = useState(null); // Για να αποθηκεύσουμε το user_id του συνδεδεμένου χρήστη
   // Το state 'filters' μπορεί να μην είναι πλέον απαραίτητο εδώ αν η HomePage δεν το χρησιμοποιεί
@@ -93,6 +96,16 @@ function AppContent() {
               <Route index element={<HomePage />} /> {/* Χρήση του 'index' για τη βασική διαδρομή /home */}
               <Route path="search-results" element={<SearchResultsPage />} /> {/* Σχετική διαδρομή */}
               <Route path="recipes/:recipeId" element={<RecipeDetailPage />} /> {/* Σχετική διαδρομή */}
+              <Route
+                path="admin-panel"
+                element={
+                  currentUser && currentUser.rank === 'admin' ? (
+                    <AdminPanel />
+                  ) : (
+                    <Navigate to="/home" replace /> // Ανακατεύθυνση αν δεν είναι admin
+                  )
+                }
+              />
               {/* Άλλα routes μπορούν να προστεθούν εδώ */}
             </Routes>
             <ChatsBar />

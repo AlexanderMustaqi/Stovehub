@@ -1,17 +1,17 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import './ProfileRecipeCard.css'; // Θα δημιουργήσουμε αυτό το αρχείο CSS
+import No_ImageIcon from './assets/no_image.jpg'; // Εικονίδιο για όταν δεν υπάρχει εικόνα
 
 const ProfileRecipeCard = ({ recipe }) => {
   if (!recipe) {
     return null;
   }
 
-  // Μπορείς να έχεις μια default εικόνα στον φάκελο public του frontend ή να τη σερβίρεις από το backend
-  const defaultRecipeImage = '/default-recipe-placeholder.png'; // Παράδειγμα: τοποθέτησέ το στο public/
+  
   const recipeImageUrl = recipe.image_url
     ? `http://localhost:5000${recipe.image_url}`
-    : defaultRecipeImage;
+    : No_ImageIcon;
 
   return (
     <Link to={`/home/recipes/${recipe.id}`} className="profile-recipe-card">
@@ -22,7 +22,7 @@ const ProfileRecipeCard = ({ recipe }) => {
           className="profile-recipe-card-image"
           onError={(e) => {
             e.target.onerror = null; // Αποτρέπει ατέρμονα loops αν και η default εικόνα αποτύχει
-            e.target.src = defaultRecipeImage;
+            e.target.src = No_ImageIcon;
           }}
         />
       </div>

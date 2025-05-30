@@ -46,8 +46,8 @@ function ProfilePage() {
                 const ServerResponse = await api.get(`/my_profile_info/${email}`);
                 console.log("ProfilePage - Raw serverResponse.data for own profile:", ServerResponse.data);
 
-                if (ServerResponse.data && ServerResponse.data.length > 0) {
-                    const userData = ServerResponse.data[0];
+                if (ServerResponse.data) { // Το ServerResponse.data είναι απευθείας το αντικείμενο του χρήστη ή null
+                    const userData = ServerResponse.data;
                     const { username, bio, rank, profile_image_url } = userData;
 
                     setUsername(username || 'Username');
@@ -226,10 +226,9 @@ function ProfilePage() {
 
     // Η uploadProfilePicture δέχεται πλέον Blob ή File
     const uploadProfilePicture = async (imageFile) => {
-        // Το imageFile είναι ήδη το Blob ή το File που θέλουμε να ανεβάσουμε.
-        // Δεν χρειάζεται να διαβάσουμε ξανά από το event.target.files.
+        
         const formData = new FormData();
-        // Αν είναι Blob, δίνουμε ένα όνομα αρχείου. Αν είναι File, έχει ήδη.
+        
         const fileName = imageFile instanceof File ? imageFile.name : 'cropped-profile.png';
         formData.append('profileImage', imageFile, fileName);
         formData.append('email', sessionStorage.getItem('email')); // Στέλνουμε το email του χρήστη
@@ -266,7 +265,7 @@ function ProfilePage() {
         }
     
         const queryParams = new URLSearchParams(activeCriteria).toString();
-        // Σιγουρέψου ότι η διαδρομή είναι σωστή, πιθανόν να θέλεις /home/search-results
+        
         const targetPath = `/home/search-results?${queryParams}`; 
         try {
           navigate(targetPath); 
@@ -333,11 +332,11 @@ function ProfilePage() {
             <Navbar onSearchClick={handleSearchClick} /> {/* Πέρασμα του onSearchClick */}
             <div className="profile-page-container"> 
                 <div className="profile-content">
-                    {/* Κρυφό input για την επιλογή αρχείου */}
+                    
                     <input 
                         type="file" 
                         ref={fileInputRef} 
-                        onChange={onSelectFile} // Άλλαξε σε onSelectFile
+                        onChange={onSelectFile} 
                         style={{ display: 'none' }} 
                         accept="image/*" // Επιτρέπει μόνο αρχεία εικόνας
                     />

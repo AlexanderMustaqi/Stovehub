@@ -130,3 +130,36 @@
   align-self: flex-start;
   margin: 0;
 }
+
+
+.comment-item {
+  display: flex; /* Changed to flex for easier alignment of report button */
+  justify-content: space-between; /* Pushes report button to the right */
+  align-items: flex-start; /* Aligns items to the top */
+  /* ... existing styles ... */
+}
+
+.comment-main-content {
+  display: flex;
+  flex-grow: 1; /* Allows this part to take available space */
+}
+
+
+
+.comment-report-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 5px;
+  margin-left: 10px; /* Space from comment content */
+}
+
+.comment-report-button img {
+  width: 18px; /* Adjust size as needed */
+  height: 18px;
+  filter: grayscale(100%) opacity(0.5);
+}
+
+.comment-report-button:hover img {
+  filter: grayscale(0%) opacity(1);
+}

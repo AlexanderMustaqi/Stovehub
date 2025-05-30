@@ -3,14 +3,15 @@ import { useParams, useNavigate } from "react-router-dom"; // Για να πάρ
 import Navbar from "../Navbar/Navbar";
 import ChatsBar from "../ChatsBar/ChatsBar";
 import api from "../api/api";
-import { IdContext } from '../ChatsBar/ChatsBar'; // Για το ID του συνδεδεμένου χρήστη
+import { UserContext } from '../App'; // Import UserContext
 import './ProfilePage.css'; 
 import { FilterSearchOverlay } from '../Navbar/FilterSearchOverlay.jsx'; // Για την αναζήτηση
 import ProfileRecipeCard from './ProfileRecipeCard'; 
 
 export default function UserProfilePage() {
     const { userId } = useParams(); // ID του χρήστη του οποίου το προφίλ βλέπουμε
-    const loggedInUserId = useContext(IdContext); // ID του συνδεδεμένου χρήστη
+    const { currentUser } = useContext(UserContext); // Get the full currentUser object
+    const loggedInUserId = currentUser?.id; // ID του συνδεδεμένου χρήστη (will be undefined if currentUser is null)
 
     const [profileData, setProfileData] = useState(null);
     const [recipes, setRecipes] = useState([]);
@@ -83,14 +84,12 @@ export default function UserProfilePage() {
         }
         fetchUserProfileData();
 
-        // Κάλεσμα για την αρχική φόρτωση των follow details μόνο αν το loggedInUserId δεν είναι undefined
-        // και το userId υπάρχει.
-        if (loggedInUserId !== undefined && userId) {
+        // Call fetchFollowDetails if we are viewing a profile (userId exists).
+        // The behavior of fetchFollowDetails itself (checking isFollowing) depends on loggedInUserId.
+        if (userId) {
+            // loggedInUserId is derived from UserContext (currentUser?.id)
             fetchFollowDetails();
-        } else if (userId && loggedInUserId === null) { // Αν ο χρήστης δεν είναι συνδεδεμένος, αλλά βλέπει προφίλ
-            fetchFollowDetails(); // Κάλεσε το για να πάρει τουλάχιστον το follower count
         }
-
     }, [userId, loggedInUserId]); // Το effect τρέχει ξανά όταν αλλάξει το userId ή το loggedInUserId
 
     useEffect(() => {
@@ -166,14 +165,14 @@ export default function UserProfilePage() {
         setFilterVisible(false);
       };
 
-    // Console logs για debugging της συνθήκης του κουμπιού
-    // console.log("[UserProfilePage] Checking button visibility conditions:");
-    // console.log("  loggedInUserId:", loggedInUserId);
-    // console.log("  profileData:", profileData);
-    // console.log("  profileData?.user_id:", profileData?.user_id);
-    // if (profileData && loggedInUserId !== undefined) { // Έλεγχος και για undefined loggedInUserId
-    //     console.log("  loggedInUserId !== profileData.user_id:", loggedInUserId !== profileData.user_id);
-    // }
+     // Console logs για debugging της συνθήκης του κουμπιού
+     console.log("[UserProfilePage] Checking button visibility conditions:");
+     console.log("  loggedInUserId:", loggedInUserId);
+     console.log("  profileData:", profileData);
+     console.log("  profileData?.user_id:", profileData?.user_id);
+     if (profileData && loggedInUserId !== undefined) { // Έλεγχος και για undefined loggedInUserId
+         console.log("  loggedInUserId !== profileData.user_id:", loggedInUserId !== profileData.user_id);
+     }
 
     // Έλεγχος και για τις δύο καταστάσεις φόρτωσης
     if (loadingProfile || (loggedInUserId !== undefined && loadingFollowData && userId)) {

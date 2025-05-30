@@ -192,3 +192,72 @@
   outline: 2px solid #dc3545;
   background-color: rgba(220, 53, 69, 0.1);
 }
+
+.nutrition-toggle-btn {
+  background-color: #4CAF50; /* Πράσινο */
+  color: white;
+  padding: 10px 15px;
+  margin-top: 15px;
+  margin-bottom: 10px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 0.9em;
+  transition: background-color 0.3s ease;
+}
+
+.nutrition-toggle-btn:hover {
+  background-color: #45a049;
+}
+
+.nutrition-section {
+  margin-top: 20px;
+  padding: 15px;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  border: 1px solid #eee;
+}
+
+.nutrition-section h3 {
+  margin-top: 0;
+  color: #333;
+  border-bottom: 1px solid #ddd;
+  padding-bottom: 10px;
+  margin-bottom: 15px;
+}
+
+.nutrition-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+}
+
+.nutrition-table th,
+.nutrition-table td {
+  border: 1px solid #ddd;
+  padding: 8px;
+  text-align: left;
+}
+
+.nutrition-table th {
+  background-color: #f2f2f2;
+  color: #333;
+  font-weight: bold;
+}
+
+.nutrition-table tbody tr:nth-child(even) {
+  background-color: #f9f9f9;
+}
+
+.nutrition-table tbody tr:hover {
+  background-color: #f1f1f1;
+}
+
+.error-message {
+  color: #D8000C; /* Σκούρο κόκκινο για σφάλματα */
+  background-color: #FFD2D2; /* Απαλό κόκκινο φόντο */
+  border: 1px solid #D8000C;
+  padding: 10px;
+  border-radius: 5px;
+  margin-top: 10px;
+}

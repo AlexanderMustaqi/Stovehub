@@ -3,8 +3,10 @@ import { useNavigate } from 'react-router-dom'; // Εισαγωγή του useNa
 import './PostCard.css';
 import ThumbsUpIcon from './assets/thumbs-up-outline.svg';
 import ThumbsDownIcon from './assets/thumbs-down-outline.svg';
+import ReportIcon from './assets/alert-circle-outline.svg'; // Εικονίδιο για Report
 import api from '../api/api'; // Υποθέτοντας ότι έχεις ένα api instance
-import { IdContext } from '../ChatsBar/ChatsBar'; // Για να πάρουμε το user_id του συνδεδεμένου χρήστη
+import { IdContext } from '../ChatsBar/ChatsBar';
+import ReportModal from '../shared/ReportModal.jsx'; // Διορθωμένη διαδρομή
 
 const GENERIC_PROFILE_IMAGE_URL = 'http://localhost:5000/uploads/pfp/default-pfp.svg';
 
@@ -17,11 +19,14 @@ function PostCard({ post }) {
   const [localLikes, setLocalLikes] = useState(post.likes_count || 0);
   const [localDislikes, setLocalDislikes] = useState(post.dislikes_count || 0);
   const [userReaction, setUserReaction] = useState(post.current_user_reaction || null);
+  const [showReportModal, setShowReportModal] = useState(false);
+  const [reportingItemId, setReportingItemId] = useState(null);
 
   useEffect(() => {
     setLocalLikes(post.likes_count || 0);
     setLocalDislikes(post.dislikes_count || 0);
     setUserReaction(post.current_user_reaction || null);
+    
   }, [post.likes_count, post.dislikes_count, post.current_user_reaction]);
 
   const handleReaction = async (reactionType) => {
@@ -79,17 +84,36 @@ function PostCard({ post }) {
     navigate(`/home/recipes/${post.id}`); // Προγραμματιστική πλοήγηση
   };
 
+  const handleOpenReportModal = (e, itemId) => {
+    e.stopPropagation(); // Για να μην ενεργοποιηθεί το handleCardClick
+    if (!currentUserId) {
+      alert("Please log in to report content.");
+      // navigate("/"); // Προαιρετικά, ανακατεύθυνση στη σελίδα login
+      return;
+    }
+    setReportingItemId(itemId);
+    setShowReportModal(true);
+  };
+
+  const handleSubmitReport = async (reportData) => {
+    const token = sessionStorage.getItem('authToken'); // Χρειαζόμαστε το token για το authMiddleware
+    try {
+      await api.post(`/api/recipes/${reportingItemId}/report`, reportData, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      alert('Report submitted successfully. Thank you for your feedback.');
+      setShowReportModal(false); // Κλείσιμο του modal
+    } catch (error) {
+      console.error("Error submitting report for post:", error);
+      alert(error.response?.data?.message || 'Failed to submit report. Please try again.');
+    }
+  };
+
+
   return (
-    // Αφαιρέθηκε το εξωτερικό Link. Το div.post-card είναι τώρα το κύριο στοιχείο.
-    // Προσθέτουμε onClick handler και cursor style για να γίνει κλικάμπλ.
+    
     <div className="post-card" onClick={handleCardClick} style={{ cursor: 'pointer' }}>
-      {/* 
-        Η κλάση "post-card-link" που υπήρχε στο Link μπορεί να μην είναι απαραίτητη πλέον,
-        ή οι ιδιότητές της (αν αφορούσαν layout όπως margin) μπορεί να χρειαστεί να μεταφερθούν 
-        στο CSS του ".post-card" ή σε ένα εξωτερικό div αν χρειάζεται για τη διάταξη.
-        Για τώρα, την αφαιρούμε υποθέτοντας ότι αφορούσε κυρίως τη συμπεριφορά του link.
-      */}
-        {/* Εμφάνιση του username πάνω από την εικόνα */}
+      
         <div className="post-author-container">
           <img 
             src={post.author_image_url ? `http://localhost:5000${post.author_image_url}` : GENERIC_PROFILE_IMAGE_URL} 
@@ -100,11 +124,19 @@ function PostCard({ post }) {
           <p className="post-author">{usernameToDisplay}</p>
         </div>
 
-        {post.imageUrl && (
-          <div className="post-image-container">
-            <img src={post.imageUrl} alt={post.title} className="post-image" />
-          </div>
-        )}
+        {/* Εμφάνιση της εικόνας της συνταγής ή του placeholder */}
+        <div className="post-image-container">
+          <img 
+            src={post.imageUrl ? post.imageUrl : No_imageIcon} 
+            alt={post.title} 
+            className="post-image" 
+            onError={(e) => {
+              // Αν το post.imageUrl υπάρχει αλλά αποτύχει να φορτώσει, βάλε το No_imageIcon
+              e.target.onerror = null; // Αποτρέπει ατέρμονο loop αν και το No_imageIcon αποτύχει
+              e.target.src = No_imageIcon;
+            }}
+          />
+        </div>
         <div className="post-info">
           <h2 className="post-title">{post.title}</h2>
           {/* Το username αφαιρέθηκε από εδώ */}
@@ -135,7 +167,8 @@ function PostCard({ post }) {
             </p>
           )}
         </div>
-      </div>
+        
+    </div>
   );
 }
 
