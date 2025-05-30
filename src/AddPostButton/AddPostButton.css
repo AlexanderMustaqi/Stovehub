@@ -1,0 +1,42 @@
+.floating-image-button {
+    position: fixed;
+    border-radius: 100%;
+    background-color: white;
+    cursor: pointer;
+    z-index: 10000;
+    transition: transform 0.2s ease;
+  }
+  
+  .floating-image-button:hover {
+    transform: scale(1.1);
+  }
+  
+
+  /* Κάτω από το κουμπί, το tooltip θα εμφανίζεται όταν περνάς τον κέρσορα */
+.tooltip {
+  position: relative;
+  display: inline-block;
+  width: 60px;
+  height: 60px;
+}
+
+.tooltip-text {
+  visibility: hidden;
+  opacity: 0;
+  width: 140px;
+  background-color: #e4c68e;
+  color: rgb(0, 0, 0);
+  text-align: center;
+  border-radius: 6px;
+  padding: 5px 8px;
+  position: absolute;
+  z-index: 1;
+  transform: translateX(-50%) translateY(-100%); /* Τοποθετεί το tooltip πάνω από το κουμπί */
+  transition: opacity 0.3s ease-in-out;
+}
+
+/* Όταν περνάς τον κέρσορα πάνω από το κουμπί, το tooltip εμφανίζεται */
+.tooltip:hover .tooltip-text {
+  visibility: visible;
+  opacity: 1;
+}

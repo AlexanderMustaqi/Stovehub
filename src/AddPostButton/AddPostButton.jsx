@@ -1,10 +1,20 @@
-import Icon from './assets/add-post-icon.png'
+import Icon from './assets/add-post-icon.png';
+import './AddPostButton.css';
 
-function AddPostButton() {
-
-    return(<>
-            <img src={Icon} alt="Add Post" className='add-post-button'/>
-            </>);
+function AddPostButton({ onClick }) {
+  return (
+    <div
+      className="floating-image-button tooltip"
+      onClick={onClick}
+      // title="Προσθήκη συνταγής" // Consider using title attribute for accessibility if tooltip is purely visual
+    >
+      <img
+        src={Icon}
+        alt="Add Post"
+      />
+      <span className="tooltip-text">Προσθήκη συνταγής</span>
+    </div>
+  );
 }
 
-export default AddPostButton
+export default AddPostButton;

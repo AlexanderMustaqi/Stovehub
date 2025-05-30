@@ -1,0 +1,50 @@
+.profile-recipe-card {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  overflow: hidden;
+  text-decoration: none;
+  color: inherit;
+  background-color: #f7d2a7;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.08);
+  transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+  /* Το πλάτος θα καθοριστεί από το grid layout */
+}
+
+.profile-recipe-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+}
+
+.profile-recipe-card-image-container {
+  width: 100%;
+  padding-top: 75%; /* Aspect ratio 4:3 (ύψος είναι 75% του πλάτους) */
+  position: relative;
+  background-color: #f5f5f5; /* Χρώμα φόντου μέχρι να φορτώσει η εικόνα */
+}
+
+.profile-recipe-card-image {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* Καλύπτει τον χώρο χωρίς παραμόρφωση */
+}
+
+.profile-recipe-card-info {
+  padding: 10px 12px;
+  text-align: center;
+}
+
+.profile-recipe-card-title {
+  font-size: 0.95rem;
+  font-weight: 600;
+  margin: 0;
+  /* Για να μην σπάει ο τίτλος σε πολλές γραμμές και να εμφανίζει "..." */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: #333;
+}

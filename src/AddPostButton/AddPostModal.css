@@ -1,0 +1,304 @@
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  background: rgba(0,0,0,0.6);
+  width: 100%;
+  height: 100%;
+  z-index: 10000;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: auto; /* Allow scroll for the overlay if modal is too tall */
+}
+
+.modal {
+  background: #f7d2a7;
+  border-radius: 5px;
+  padding: 20px;
+  width: 90%;
+  max-width: 750px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  animation: fadeIn 0.3s ease-out;
+  max-height: 90vh; /* Set a maximum height for the modal */
+  overflow-y: auto; /* Enable vertical scrolling within the modal */
+}
+
+.modal-close {
+  position: absolute;
+  top: 10px;
+  right: 14px;
+  font-size: 2.5rem;
+  background: none;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.modal-close:hover {
+  transform: rotate(90deg);
+}
+
+@keyframes fadeIn {
+  from {
+      opacity: 0;
+      transform: translateY(20px);
+  }
+  to {
+      opacity: 1;
+      transform: translateY(0);
+  }
+}
+
+.modal input[type="text"],
+.modal textarea,
+.modal-select,
+.time-input input {
+  padding: 10px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  font-size: 1rem;
+  resize: vertical;
+}
+
+.image-preview {
+  display: block;
+  width: 100%;
+  height: auto;
+  object-fit: fill; 
+  max-height: 300px; /* Προαιρετικό μέγιστο ύψος */
+}
+
+.submit-btn {
+  padding: 10px;
+  background-color: #007bff;
+  color: white;
+  font-weight: bold;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+/*στυλ για τα υλικά */
+.ingredients-section {
+  margin: 1rem 0;
+}
+
+.ingredients-input {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.ingredients-input input {
+  flex: 1;
+  padding: 0.5rem;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+}
+
+.add-ingredient-btn {
+  padding: 0 1rem;
+  background: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 1.2rem;
+}
+
+.ingredients-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.ingredient-tag {
+  background: #f0f0f0;
+  padding: 0.3rem 0.8rem;
+  border-radius: 15px;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.9rem;
+}
+
+.remove-tag-btn {
+  background: none;
+  border: none;
+  color: #666;
+  cursor: pointer;
+  padding: 0;
+  font-size: 1rem;
+  line-height: 1;
+}
+
+.remove-tag-btn:hover {
+  color: #ff0000;
+}
+
+.modal-select {
+  width: 100%;
+  padding: 0.8rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  background: #fff;
+  margin: 5px 0; /* Added margin for better spacing */
+}
+
+.time-input {
+  display: flex;
+  gap: 10px;
+  margin: 5px 0; /* Added margin for better spacing */
+}
+
+.time-input input {
+  flex: 2;
+  padding: 0.8rem;
+}
+
+.time-input select {
+  flex: 1;
+  padding: 0.8rem; /* Ensure consistent padding */
+}
+
+.form-group {
+  margin-bottom: 1rem;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+  color: #333;
+}
+
+.form-group.image-upload {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+  margin-bottom: 1.5rem;
+}
+
+.image-upload-label {
+  font-weight: 600;
+  color: #333;
+}
+
+.drop-area {
+  border: 2px dashed #ccc;
+  border-radius: 8px;
+  padding: 2rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  background-color: #f8f8f8;
+  transition: border-color 0.3s ease;
+  margin-bottom: 0.5rem; /* Προσθέτουμε λίγο χώρο κάτω από το drop area */
+}
+
+.drop-area.dragging {
+  border-color: #007bff;
+  background-color: #e9f2ff;
+}
+
+.drop-message {
+  color: #777;
+  font-size: 1rem;
+  text-align: center;
+}
+
+.file-input {
+  display: none;
+}
+
+.image-preview-wrapper {
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 0.5rem; /* Προσθέτουμε χώρο κάτω από την εικόνα */
+}
+
+
+.image-actions {
+  display: none; /* Κρύβουμε τα επικαλυπτικά κουμπιά */
+}
+
+.image-actions-below {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: flex-end; /* Ευθυγράμμιση των κουμπιών δεξιά */
+  margin-top: 0.5rem;
+}
+
+.image-actions-below .image-action-btn {
+  background: #007bff;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: background-color 0.3s ease;
+}
+
+.image-actions-below .image-action-btn:hover {
+  background-color: #0056b3;
+}
+
+.image-actions-below .image-action-btn.remove {
+  background-color: #dc3545;
+}
+
+.image-actions-below .image-action-btn.remove:hover {
+  background-color: #c82333;
+}
+
+.modal textarea {
+  width: 95%;
+  min-height: 100px;
+  padding: 1rem; /* Αυξάνουμε το padding */
+  border-radius: 11px;
+  border: 2px solid #be7b23; /* Κάνουμε την περίμετρο πιο διακριτική */
+  font-size: 1rem;
+  resize: vertical; /* Επιτρέπουμε την κατακόρυφη αλλαγή μεγέθους */
+  font-family: inherit;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05); /* Προσθέτουμε μια διακριτική σκίαση */
+  transition: border-color 0.3s ease, box-shadow 0.3s ease; /* Προσθέτουμε transitions για πιο ομαλές αλλαγές */
+}
+
+.modal textarea:focus {
+  border-color: #007bff; /* Αλλάζουμε το χρώμα της περιμέτρου στο focus */
+  box-shadow: 0 1px 6px rgba(0, 123, 255, 0.2); /* Ενισχύουμε τη σκίαση στο focus */
+  /*outline: none; /* Αφαιρούμε την προεπιλεγμένη εμφάνιση focus */
+}
+
+.file-input {
+  width: 100%;
+  padding: 0.5rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  margin-top: 5px;
+}
+
+/* WebKit (Chrome, Safari, Edge) */
+::-webkit-scrollbar {
+  width: 8px; /* Adjust width as needed */
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: #aaa;
+  border-radius: 10px; /* Add border-radius to the thumb */
+}
+
+::-webkit-scrollbar-track {
+  background-color: #f1f1f1;
+  border-radius: 10px; /* Optionally add border-radius to the track */
+}

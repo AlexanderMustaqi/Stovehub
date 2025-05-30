@@ -1,0 +1,66 @@
+
+.home-page {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 20px;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+.search-feedback-container {
+  display: flex; /* Ενεργοποίηση flexbox για κεντράρισμα */
+  flex-direction: column; /* Στοίχιση των παιδιών κάθετα */
+  justify-content: center; /* Κεντράρισμα κάθετα */
+  align-items: center; /* Κεντράρισμα οριζόντια */
+  text-align: center; /* Κεντράρισμα του κειμένου μέσα στα παιδιά */
+  min-height: 60vh; /* Ελάχιστο ύψος για να πιάνει ένα καλό μέρος της οθόνης */
+  padding: 20px;
+  box-sizing: border-box; /* Για να συμπεριλαμβάνεται το padding στο συνολικό μέγεθος */
+}
+
+.search-feedback-content {
+  background-color: #f9f9f9; /* Ελαφρύ γκρι φόντο */
+  padding: 30px 40px;
+  border-radius: 12px; /* Στρογγυλεμένες γωνίες */
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1); /* Διακριτική σκιά */
+  max-width: 500px; /* Μέγιστο πλάτος για να μην απλώνεται πολύ σε μεγάλες οθόνες */
+  width: 90%; /* Πλάτος για μικρότερες οθόνες */
+}
+
+.search-feedback-icon {
+  font-size: 3.5em; /* Μέγεθος εικονιδίου/emoji */
+  display: block; /* Για να πιάνει όλο το πλάτος και να επιτρέπει margin auto */
+  margin-bottom: 20px;
+  color: #555; /* Χρώμα εικονιδίου */
+}
+
+.search-feedback-content h2 {
+  font-size: 1.8em;
+  color: #333;
+  margin-top: 0;
+  margin-bottom: 15px;
+}
+
+.search-feedback-content p {
+  font-size: 1.1em;
+  color: #666;
+  line-height: 1.6;
+}
+
+
+@media (max-width: 600px) {
+  .search-feedback-content {
+    padding: 20px 25px;
+  }
+  .search-feedback-icon {
+    font-size: 3em;
+  }
+  .search-feedback-content h2 {
+    font-size: 1.6em;
+  }
+  .search-feedback-content p {
+    font-size: 1em;
+  }
+}

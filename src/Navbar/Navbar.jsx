@@ -1,3 +1,4 @@
+import React from "react";
 import Logo from "./Logo";
 import Search from "./Search";
 import Home from "./Home";
@@ -6,13 +7,15 @@ import Notifications from "./Notifications";
 import Profile from "./Profile";
 import Cart from "./Cart";
 
-function Navbar() {
+function Navbar({ onSearchClick }) {
     return(
         <>
             <div className="navbar">
                 <div className="navbar-left">
+                    
                     <Logo></Logo>
-                    <Search></Search>  
+                    <Search onClick={onSearchClick} />
+                  
                 </div>
                 <div className="navbar-center">
                     <Home></Home>
@@ -28,5 +31,6 @@ function Navbar() {
         </>
     );
 }
+
 
 export default Navbar;

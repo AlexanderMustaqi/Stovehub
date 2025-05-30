@@ -40,3 +40,15 @@
 .read-the-docs {
   color: #888;
 }
+
+.add-post-button {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+  background-color: white;
+  z-index: 1000;
+}
