@@ -12,7 +12,6 @@ export const useWebSocket = () => {
 function ChatWin({selected : selected, setSelected: setSelected}) {
 
 
-    //selected[0] = chat_id, selected[1] = chat_name
     const [style, setStyle] = useState('none');
     const [messages, setMessages] = useState([]);
     const [trigger, setTrigger] = useState(0);

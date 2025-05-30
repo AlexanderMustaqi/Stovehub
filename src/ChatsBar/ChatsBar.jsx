@@ -5,8 +5,6 @@ import LittleKittyIcon from './assets/LittleKitty.png'
 import ChatWin from './ChatWin.jsx'
 import ChatAdd from './ChatAdd.jsx'
 
-// This context is for children of ChatsBar, if they need the loggedInUserId
-// Provide a default value, e.g., null, for when the provider is not yet available or user is not logged in.
 export const IdContext = createContext(null);
 
 function ChatsBar() {
@@ -14,7 +12,7 @@ function ChatsBar() {
     const [chats, setChats] = useState([]);
     const [selected, setSelected ] = useState([0,'']);
     const [trigger, setTrigger] = useState(0);
-    // Removed local 'user' state and its associated useEffect as currentUser.id will be used.
+    
 
     //Fetch current user's chats when userType or trigger changes
     useEffect(() => {
@@ -31,9 +29,8 @@ function ChatsBar() {
         } else {
             setChats([]); // Clear chats if no user or no email
         }
-    }, [currentUser, trigger]); // Depends on currentUser and trigger
+    }, [currentUser, trigger]); 
 
-    //Scroll without scrollbar
     useEffect(() => {
         const chatbarElement = document.getElementById('chatbar_ul');
         const handleMouseOver = (e) => {
@@ -45,7 +42,7 @@ function ChatsBar() {
                     behavior: "smooth"
                 })
             }
-            else if (y > (chatbarElement.clientHeight - 50) && chatbarElement.clientHeight > 50) { // Προσαρμογή για το κάτω όριο
+            else if (y > (chatbarElement.clientHeight - 50) && chatbarElement.clientHeight > 50) { 
                 chatbarElement.scrollBy({
                     top: 50,
                     behavior: 'smooth'
@@ -53,11 +50,11 @@ function ChatsBar() {
             }
         };
 
-        if (currentUser && chatbarElement) { // Enable only if user is logged in
+        if (currentUser && chatbarElement) { 
             chatbarElement.addEventListener('mouseover', handleMouseOver);
         }
 
-        return () => { // Cleanup function
+        return () => { 
             if (chatbarElement) {
                 chatbarElement.removeEventListener('mouseover', handleMouseOver);
             }
@@ -73,7 +70,7 @@ function ChatsBar() {
     return(
         currentUser ? // If user is logged in
         (
-            <IdContext.Provider value={currentUser.id}> {/* Pass the actual user ID for children of ChatsBar */}
+            <IdContext.Provider value={currentUser.id}> 
                 <ChatWin selected={selected} setSelected={setSelected} />
                 <div id='chatbar_id' className='chatbar'>
                     <ChatAdd setTrigger={setTrigger} trigger={trigger}/>
@@ -88,7 +85,7 @@ function ChatsBar() {
             </IdContext.Provider>
         )
         :
-        (null) // If user is not logged in, don't render ChatsBar
+        (null) 
     );
 }
 export default ChatsBar;

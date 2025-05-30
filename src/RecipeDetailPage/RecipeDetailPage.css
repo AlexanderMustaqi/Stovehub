@@ -24,7 +24,7 @@
 
 .recipe-image-full-container {
   width: 75%;
-  max-height: 700px; /* Προσαρμόστε ανάλογα */
+  max-height: 700px; 
   overflow: hidden;
   border-radius: 8px;
   margin: 0 auto 20px;
@@ -41,7 +41,7 @@
   display: block;
   max-width: 100%;
   max-height: 100%;
-  object-fit: contain; /* Διατήρηση αναλογιών εικόνας */
+  object-fit: contain; 
   scroll-snap-align: start;
 }
 
@@ -89,8 +89,8 @@
   font-size: 1.1em;
   line-height: 1.7;
   color: #333;
-  white-space: pre-wrap; /* Διατήρηση των αλλαγών γραμμής από την περιγραφή */
-  overflow-wrap: normal; /* Διαχείριση μεγάλων λέξεων */
+  white-space: pre-wrap; 
+  overflow-wrap: normal; 
 }
 
 .ingredients-list-full {
@@ -105,14 +105,6 @@
 }
 
 
-
-/* Προαιρετικά: Στυλ για μελλοντική φόρμα σχολίων */
-/*
-.comment-form-placeholder textarea { width: 100%; margin-bottom: 10px; padding: 8px; border-radius: 4px; border: 1px solid #ccc; }
-.comment-form-placeholder button { padding: 8px 15px; background-color: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer; }
-.comment-form-placeholder button:hover { background-color: #0056b3; }
-*/
-
 .recipe-detail-page.error-message p {
   color: red;
   font-weight: bold;
@@ -123,26 +115,26 @@
 .recipe-author-container {
   display: flex;
   align-items: center;
-  gap: 10px; /* Διάστημα μεταξύ εικόνας και κειμένου */
-  margin-bottom: 15px; /* Διάστημα πριν την εικόνα */
+  gap: 10px; 
+  margin-bottom: 15px; 
 }
 
 .author-profile-pic-detail {
-  width: 40px; /* Προσαρμόστε το μέγεθος όπως θέλετε */
-  height: 40px; /* Προσαρμόστε το μέγεθος όπως θέλετε */
-  border-radius: 50%; /* Για κυκλική εικόνα */
-  object-fit: cover; /* Για να καλύπτει σωστά τον χώρο χωρίς παραμόρφωση */
-  border: 1px solid #ddd; /* Προαιρετικό περίγραμμα */
+  width: 40px; 
+  height: 40px; 
+  border-radius: 50%; 
+  object-fit: cover; 
+  border: 1px solid #ddd; 
 }
 
 .recipe-author-text {
   font-size: 1.1em;
   color: #555;
-  margin: 0; /* Κατάργηση προεπιλεγμένου margin από το <p> */
+  margin: 0; 
 }
 
 .recipe-author-text a {
-  color: #000000; /* Μπορείτε να χρησιμοποιήσετε var(--primary) αν το έχετε ορίσει */
+  color: #000000; 
   text-decoration: none;
   font-weight: bold;
 }
@@ -152,13 +144,11 @@
 }
 
 
-/* Στυλ για τα κουμπιά Reaction στο RecipeDetailPage */
 .recipe-detail-actions {
   display: flex;
   gap: 10px;
-  margin-top: 10px; /* Διάστημα κάτω από τον τίτλο */
-  margin-bottom: 20px; /* Διάστημα πάνω από τα meta-data */
-  /* justify-content: center; /* Για κεντράρισμα αν χρειαστεί */
+  margin-top: 10px; 
+  margin-bottom: 20px; 
 }
 
 .recipe-detail-actions .like-dislike-btn {
@@ -194,7 +184,7 @@
 }
 
 .nutrition-toggle-btn {
-  background-color: #4CAF50; /* Πράσινο */
+  background-color: #4CAF50; 
   color: white;
   padding: 10px 15px;
   margin-top: 15px;
@@ -254,8 +244,8 @@
 }
 
 .error-message {
-  color: #D8000C; /* Σκούρο κόκκινο για σφάλματα */
-  background-color: #FFD2D2; /* Απαλό κόκκινο φόντο */
+  color: #D8000C; 
+  background-color: #FFD2D2; 
   border: 1px solid #D8000C;
   padding: 10px;
   border-radius: 5px;

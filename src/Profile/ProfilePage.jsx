@@ -1,13 +1,12 @@
 import { useEffect, useRef, useState } from "react";
-import { useNavigate } from "react-router-dom"; // Προσθήκη useNavigate
+import { useNavigate } from "react-router-dom"; 
 import ReactCrop, { centerCrop, makeAspectCrop } from 'react-image-crop';
 import ChatsBar from "../ChatsBar/ChatsBar"
 import Navbar from "../Navbar/Navbar"
 import api from "../api/api"
-import './ProfilePage.css'; // Εισαγωγή του CSS αρχείου
-import 'react-image-crop/dist/ReactCrop.css'; // CSS για το react-image-crop
-import { FilterSearchOverlay } from '../Navbar/FilterSearchOverlay.jsx'; // Προσθήκη FilterSearchOverlay
-
+import './ProfilePage.css'; 
+import 'react-image-crop/dist/ReactCrop.css'; 
+import { FilterSearchOverlay } from '../Navbar/FilterSearchOverlay.jsx'; 
 function ProfilePage() {
     
     const profileImageRef = useRef(null); // Ref για την εικόνα προφίλ
@@ -22,16 +21,16 @@ function ProfilePage() {
     const [changeBio, setChangeBio] = useState(false);
 
     // State για το image cropper
-    const [upImg, setUpImg] = useState(null); // Το επιλεγμένο αρχείο εικόνας (data URL)
-    const imgRef = useRef(null); // Ref για την εικόνα μέσα στο cropper
-    const previewCanvasRef = useRef(null); // Ref για το canvas προεπισκόπησης
-    const [crop, setCrop] = useState(); // Οι διαστάσεις του crop
-    const [completedCrop, setCompletedCrop] = useState(null); // Το τελικό crop (pixelCrop)
+    const [upImg, setUpImg] = useState(null); 
+    const imgRef = useRef(null); 
+    const previewCanvasRef = useRef(null); 
+    const [crop, setCrop] = useState(); 
+    const [completedCrop, setCompletedCrop] = useState(null); 
     const [showCropperModal, setShowCropperModal] = useState(false);
-    const aspect = 1 / 1; // Για τετράγωνο crop (1:1 aspect ratio)
+    const aspect = 1 / 1; 
 
     const [filterVisible, setFilterVisible] = useState(false); // State για το FilterSearchOverlay
-    const navigate = useNavigate(); // Hook για πλοήγηση
+    const navigate = useNavigate(); 
 
     const defaultPfpSrc = `http://localhost:5000/uploads/pfp/default-pfp.svg`;
 
@@ -214,9 +213,9 @@ function ProfilePage() {
             } else {
                 console.error('Failed to create blob from canvas.');
             }
-        }, 'image/png', 1); // Μπορείς να αλλάξεις το format (π.χ. 'image/jpeg') και την ποιότητα
+        }, 'image/png', 1); 
         setShowCropperModal(false);
-        setUpImg(null); // Καθαρισμός για την επόμενη επιλογή
+        setUpImg(null); 
     };
 
     const handleCancelCrop = () => {
@@ -224,7 +223,7 @@ function ProfilePage() {
         setUpImg(null);
     };
 
-    // Η uploadProfilePicture δέχεται πλέον Blob ή File
+    // Η uploadProfilePicture δέχεται Blob ή File
     const uploadProfilePicture = async (imageFile) => {
         
         const formData = new FormData();
@@ -288,8 +287,8 @@ function ProfilePage() {
                                 onChange={(_, percentCrop) => setCrop(percentCrop)}
                                 onComplete={(c) => setCompletedCrop(c)}
                                 aspect={aspect}
-                                minWidth={100} // Ελάχιστο πλάτος crop σε pixels
-                                minHeight={100} // Ελάχιστο ύψος crop σε pixels
+                                minWidth={100} 
+                                minHeight={100} 
                             >
                                 <img
                                     ref={imgRef}
@@ -300,7 +299,6 @@ function ProfilePage() {
                                 />
                             </ReactCrop>
                         )}
-                        {/* Κρυφό canvas για την προεπισκόπηση και τη δημιουργία του Blob */}
                         <canvas ref={previewCanvasRef} style={{ display: 'none' }} />
                         <div className="profile-form-actions cropper-actions">
                             <button type="button" onClick={handleConfirmCrop} className="btn-primary">Επιβεβαίωση</button>
@@ -329,7 +327,7 @@ function ProfilePage() {
                     </div>
                 </form>
             </div>}
-            <Navbar onSearchClick={handleSearchClick} /> {/* Πέρασμα του onSearchClick */}
+            <Navbar onSearchClick={handleSearchClick} /> 
             <div className="profile-page-container"> 
                 <div className="profile-content">
                     

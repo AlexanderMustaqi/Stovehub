@@ -28,7 +28,6 @@ export function FilterSearchOverlay({ visible, onClose, onApply }) {
   };
 
   const handleApplyRecipes = () => {
-    // Μετατροπή του χρόνου προετοιμασίας σε λεπτά για το API
     let prepTimeInMinutes = null;
     if (prepTime) {
       prepTimeInMinutes = timeUnit === 'hours' ? parseInt(prepTime) * 60 : parseInt(prepTime);
@@ -39,8 +38,8 @@ export function FilterSearchOverlay({ visible, onClose, onApply }) {
       query,
       category,
       difficulty,
-      prepTime: prepTimeInMinutes, // Στέλνουμε πάντα σε λεπτά
-      ingredients: ingredients.join(',') // Μετατροπή του πίνακα σε string χωρισμένο με κόμματα
+      prepTime: prepTimeInMinutes, 
+      ingredients: ingredients.join(',') 
     });
     
     onClose();

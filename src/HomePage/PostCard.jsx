@@ -4,18 +4,19 @@ import './PostCard.css';
 import ThumbsUpIcon from './assets/thumbs-up-outline.svg';
 import ThumbsDownIcon from './assets/thumbs-down-outline.svg';
 import ReportIcon from './assets/alert-circle-outline.svg'; // Εικονίδιο για Report
-import api from '../api/api'; // Υποθέτοντας ότι έχεις ένα api instance
+import api from '../api/api'; 
 import { IdContext } from '../ChatsBar/ChatsBar';
-import ReportModal from '../shared/ReportModal.jsx'; // Διορθωμένη διαδρομή
+import ReportModal from '../shared/ReportModal.jsx'; 
+import No_imageIcon from './assets/no_image.jpg'; // Εικονίδιο για όταν δεν υπάρχει εικόνα
 
 const GENERIC_PROFILE_IMAGE_URL = 'http://localhost:5000/uploads/pfp/default-pfp.svg';
 
 function PostCard({ post }) {
   const usernameToDisplay = post.posted_by || 'Anonymous';
-  const navigate = useNavigate(); // Αρχικοποίηση του useNavigate
+  const navigate = useNavigate(); 
   const currentUserId = useContext(IdContext); // Παίρνουμε το user_id του τρέχοντος χρήστη
 
-  // Τοπικό state για άμεση ενημέρωση του UI, αλλά η "αλήθεια" έρχεται από το post prop
+  
   const [localLikes, setLocalLikes] = useState(post.likes_count || 0);
   const [localDislikes, setLocalDislikes] = useState(post.dislikes_count || 0);
   const [userReaction, setUserReaction] = useState(post.current_user_reaction || null);
@@ -42,13 +43,12 @@ function PostCard({ post }) {
 
     try {
       await api.post(`/recipes/${post.id}/react`, { userId: currentUserId, reactionType: newReactionType });
-      // Βελτιωμένη λογική για άμεση ενημέρωση του τοπικού state (localLikes, localDislikes, userReaction)
       const previousReaction = userReaction; // Η αντίδραση πριν την τρέχουσα ενέργεια
 
-      // 1. Ενημέρωσε το userReaction state
+      // Ενημέρωσε το userReaction state
       setUserReaction(newReactionType);
 
-      // 2. Ενημέρωσε τα counts (localLikes, localDislikes)
+      // Ενημέρωσε τα counts (localLikes, localDislikes)
       // Μείωσε τον μετρητή αν η προηγούμενη αντίδραση αφαιρέθηκε
       if (previousReaction === 'like' && newReactionType !== 'like') {
         setLocalLikes(prev => prev - 1);
@@ -57,7 +57,7 @@ function PostCard({ post }) {
         setLocalDislikes(prev => prev - 1);
       }
 
-      // Αύξησε τον μετρητή αν προστέθηκε νέα αντίδραση (και δεν ήταν ήδη αυτού του τύπου)
+      // Αύξησε τον μετρητή αν προστέθηκε νέα αντίδραση 
       if (newReactionType === 'like' && previousReaction !== 'like') {
         setLocalLikes(prev => prev + 1);
       }
@@ -71,24 +71,23 @@ function PostCard({ post }) {
   };
 
   const handleLike = (e) => {
-    e.stopPropagation(); // Αποτροπή του event να φτάσει στον onClick handler της κάρτας
+    e.stopPropagation(); 
     handleReaction('like');
   };
 
   const handleDislike = (e) => {
-    e.stopPropagation(); // Αποτροπή του event να φτάσει στον onClick handler της κάρτας
+    e.stopPropagation(); 
     handleReaction('dislike');
   };
 
   const handleCardClick = () => {
-    navigate(`/home/recipes/${post.id}`); // Προγραμματιστική πλοήγηση
+    navigate(`/home/recipes/${post.id}`);
   };
 
   const handleOpenReportModal = (e, itemId) => {
-    e.stopPropagation(); // Για να μην ενεργοποιηθεί το handleCardClick
+    e.stopPropagation(); 
     if (!currentUserId) {
       alert("Please log in to report content.");
-      // navigate("/"); // Προαιρετικά, ανακατεύθυνση στη σελίδα login
       return;
     }
     setReportingItemId(itemId);
@@ -124,24 +123,20 @@ function PostCard({ post }) {
           <p className="post-author">{usernameToDisplay}</p>
         </div>
 
-        {/* Εμφάνιση της εικόνας της συνταγής ή του placeholder */}
         <div className="post-image-container">
           <img 
             src={post.imageUrl ? post.imageUrl : No_imageIcon} 
             alt={post.title} 
             className="post-image" 
             onError={(e) => {
-              // Αν το post.imageUrl υπάρχει αλλά αποτύχει να φορτώσει, βάλε το No_imageIcon
-              e.target.onerror = null; // Αποτρέπει ατέρμονο loop αν και το No_imageIcon αποτύχει
+              e.target.onerror = null; 
               e.target.src = No_imageIcon;
             }}
           />
         </div>
         <div className="post-info">
           <h2 className="post-title">{post.title}</h2>
-          {/* Το username αφαιρέθηκε από εδώ */}
           <p className="post-meta">
-            {/* Τα κουμπιά like/dislike και τα σχόλια παραμένουν εδώ ή μπορούν να μετακινηθούν ανάλογα με το design */}
             <button
               onClick={handleLike}
               className={`like-dislike-btn ${userReaction === 'like' ? 'active-like' : ''}`}

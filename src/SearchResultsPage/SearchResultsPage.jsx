@@ -1,26 +1,26 @@
-import React, { useState, useEffect, useContext } from 'react'; // Προσθήκη useContext
+import React, { useState, useEffect, useContext } from 'react'; 
 import { useLocation } from 'react-router-dom';
-import PostCard from '../HomePage/PostCard'; // Προσαρμογή διαδρομής αν χρειάζεται
-import '../HomePage/HomePage.css'; // Χρήση ίδιων στυλ ή δημιουργία νέων
-import UserCard from '../Profile/UserCard'; // Εισαγωγή του UserCard
+import PostCard from '../HomePage/PostCard'; 
+import '../HomePage/HomePage.css'; 
+import UserCard from '../Profile/UserCard'; 
 import api from '../api/api';
-import { IdContext } from '../ChatsBar/ChatsBar'; // Υποθέτουμε ότι αυτό είναι το σωστό Context
+import { IdContext } from '../ChatsBar/ChatsBar'; 
 
 function SearchResultsPage() {
   const [posts, setPosts] = useState([]);
-  const [currentSearchType, setCurrentSearchType] = useState(null); // State για τον τρέχοντα τύπο αναζήτησης
-  const location = useLocation(); // Για πρόσβαση στις παραμέτρους URL
-  const currentUserId = useContext(IdContext); // Λήψη του currentUserId
+  const [currentSearchType, setCurrentSearchType] = useState(null); 
+  const location = useLocation(); 
+  const currentUserId = useContext(IdContext); 
 
   useEffect(() => {
-    const controller = new AbortController(); // Δημιουργία AbortController
+    const controller = new AbortController(); 
 
     const fetchFilteredPosts = async () => {
       const queryParams = new URLSearchParams(location.search);
       // Δημιουργία αντικειμένου filters από τις παραμέτρους URL
       const filtersFromUrl = {
         query: queryParams.get('query'),
-        type: queryParams.get('type'), // Το 'type' είναι σημαντικό για τη λογική αναζήτησης
+        type: queryParams.get('type'), 
         category: queryParams.get('category'),
         difficulty: queryParams.get('difficulty'),
         prepTime: queryParams.get('prepTime'),
@@ -39,7 +39,7 @@ function SearchResultsPage() {
       if (activeFilters.type) {
         setCurrentSearchType(activeFilters.type);
       } else {
-        setCurrentSearchType(null); // Ή 'recipes' ως default αν δεν υπάρχει type
+        setCurrentSearchType(null); 
       }
       console.log("[SearchResultsPage] Active filters from URL (including type):", JSON.stringify(activeFilters));
 
@@ -51,7 +51,7 @@ function SearchResultsPage() {
 
       try {
         let url;
-        const paramsForApi = new URLSearchParams(); // Παράμετροι για την κλήση API
+        const paramsForApi = new URLSearchParams(); 
         let shouldUseSearchEndpoint = false;
 
         // Λογική κατασκευής URL παρόμοια με το HomePage.jsx
@@ -67,39 +67,33 @@ function SearchResultsPage() {
           if (activeFilters.prepTime) paramsForApi.append('prepTime', activeFilters.prepTime);
           if (activeFilters.ingredients) paramsForApi.append('ingredients', activeFilters.ingredients);
         }
-        // Εδώ μπορείς να προσθέσεις λογική για activeFilters.type === 'users' αν χρειάζεται
-        // και να καλέσεις ένα διαφορετικό endpoint, π.χ., /users/search
 
         if (shouldUseSearchEndpoint) {
           url = (activeFilters.type === 'users') ? '/users/search' : '/posts/search'; // Παράδειγμα για users
           if (paramsForApi.toString()) {
-            // Προσθήκη userId στις παραμέτρους αν υπάρχει και ψάχνουμε για recipes
             if (activeFilters.type === 'recipes' && currentUserId) {
               paramsForApi.append('userId', currentUserId);
             }
             url += `?${paramsForApi.toString()}`;
           }
-        } else {
-          // Αν δεν πρέπει να χρησιμοποιηθεί το search endpoint αλλά υπάρχουν φίλτρα,
-          // αποφάσισε τη συμπεριφορά (π.χ. εμφάνιση μηνύματος)
+        } else { 
           console.log("[SearchResultsPage] Conditions for search endpoint not met, clearing posts.");
           setPosts([]);
           return;
         }
         
         console.log("[SearchResultsPage] Attempting to fetch URL:", url); 
-        const res = await api.get(url, { signal: controller.signal }); // Πέρασμα του signal στο request
+        const res = await api.get(url, { signal: controller.signal }); 
         setPosts(res.data); // Ενημέρωση μόνο αν το request δεν ακυρώθηκε
       } catch (err) {
         if (err.name === 'CanceledError') {
-          // console.log('[SearchResultsPage] Fetch aborted'); // Το request ακυρώθηκε, δεν είναι πραγματικό σφάλμα
+          // console.log('[SearchResultsPage] Fetch aborted'); 
         } else {
           console.error('[SearchResultsPage] Σφάλμα στο fetch:', err);
-          setPosts([]); // Καθάρισμα σε περίπτωση πραγματικού σφάλματος
+          setPosts([]); 
         }
       }
     };
-
     // Εκτέλεση του fetch μόνο αν υπάρχουν query parameters
     if (location.search) {
       fetchFilteredPosts();
@@ -107,11 +101,10 @@ function SearchResultsPage() {
       setPosts([]); // Καθάρισμα των posts αν δεν υπάρχουν query params
     }
 
-    // Cleanup συνάρτηση για ακύρωση του request αν το component γίνει unmount ή το effect ξανατρέξει
     return () => {
       controller.abort();
     };
-  }, [location.search, currentUserId]); // Επαναφόρτωση όταν αλλάζουν οι παράμετροι URL ή το currentUserId
+  }, [location.search, currentUserId]); 
 
   if (posts.length === 0 && location.search) {
     return (
@@ -133,11 +126,10 @@ function SearchResultsPage() {
       ))}
       {currentSearchType === 'recipes' && posts.map(post => (
           <PostCard
-            key={post.id} // Βεβαιώσου ότι το post.id είναι μοναδικό για συνταγές
+            key={post.id} 
             post={{
               ...post,
               imageUrl: `http://localhost:5000${post.image_url}`,
-              // Προσαρμογή για να είναι συνεπές με το HomePage.jsx
               commentCount: post.comment_count || 0, 
               comments: [] 
             }}

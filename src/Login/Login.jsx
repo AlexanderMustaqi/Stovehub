@@ -1,6 +1,6 @@
 import { useState,useRef, useEffect, useContext } from "react"
 import { useNavigate, Link } from 'react-router-dom' 
-import { UserContext } from '../App.jsx' // Διόρθωση: Εισαγωγή του UserContext αντί του UserUpdateContext
+import { UserContext } from '../App.jsx' 
 import api from "../api/api";
 
 const root = {
@@ -28,15 +28,13 @@ function Login() {
     const usernameRef = useRef(null);
     const passwordRef = useRef(null);
     const emailRef = useRef(null);
-    const navigate = useNavigate(); // Χρήση του useNavigate
-    const { handleLogin: contextHandleLogin, currentUser } = useContext(UserContext); // Χρήση του UserContext για να πάρουμε το handleLogin
+    const navigate = useNavigate(); 
+    const { handleLogin: contextHandleLogin, currentUser } = useContext(UserContext); 
 
     useEffect(() => {
-        // Αν υπάρχει ήδη χρήστης συνδεδεμένος, πήγαινε στο home
         if (currentUser) {
             navigate('/home');
         }
-        // Δεν χρειάζεται να καθαρίζουμε το sessionStorage εδώ, το App.jsx το χειρίζεται.
     }, [currentUser, navigate])
 
     const resetValues = () => {
@@ -50,7 +48,7 @@ function Login() {
         setLoginFlag(!login_flag);
     }
 
-    const handleLoginSubmit = async (e) => { // Μετονομασία για αποφυγή σύγκρουσης με το contextHandleLogin
+    const handleLoginSubmit = async (e) => { 
         e.preventDefault();
         const email = emailRef.current.value;
         const password = passwordRef.current.value;
@@ -58,21 +56,16 @@ function Login() {
         try {
             const loginSuccess = await contextHandleLogin(email, password); // Κλήση της συνάρτησης από το App.jsx
             if (loginSuccess) {
-                // Η πλοήγηση στο /home θα γίνει αυτόματα από το useEffect παραπάνω
-                // όταν το currentUser ενημερωθεί.
-                // navigate('/home'); // Δεν χρειάζεται πλέον εδώ
             } else {
-                // Το contextHandleLogin θα έχει ήδη κάνει console.error
-                // και θα έχει επιστρέψει false.
                 alert('Login failed. Please check your email and password.');
                 setAuth('Not Found'); // Ενημέρωση του auth state για εμφάνιση μηνύματος αν χρειάζεται
             }
         } catch (err) {
             console.error("Login component error during submit:", err);
             alert('An unexpected error occurred during login.');
-            setAuth('Error'); // Ενημέρωση του auth state για εμφάνιση μηνύματος αν χρειάζεται
+            setAuth('Error'); 
         }
-    }; // Αφαιρέθηκε το `, [auth]`
+    }; 
 
     const handleRegister = (e) => {
         e.preventDefault();
@@ -85,7 +78,6 @@ function Login() {
             email: email,
             password: password
         }
-        //send data to server to POST new user as Registered
         const postData = async (ClientRequest) => {
             try {
                 const ServerResponse = await api.post('/postRegisteredUser', ClientRequest);
@@ -107,8 +99,7 @@ function Login() {
     }
 
     const handleGuestClickEvent = () => {
-        // Για guest, απλά πλοηγούμαστε. Το App.jsx θα έχει currentUser=null.
-        // Δεν χρειάζεται να καλέσουμε setuserType εδώ.
+        
         navigate('/home'); // Χρήση του navigate
     }
     

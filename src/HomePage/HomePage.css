@@ -10,30 +10,30 @@
 }
 
 .search-feedback-container {
-  display: flex; /* Ενεργοποίηση flexbox για κεντράρισμα */
-  flex-direction: column; /* Στοίχιση των παιδιών κάθετα */
-  justify-content: center; /* Κεντράρισμα κάθετα */
-  align-items: center; /* Κεντράρισμα οριζόντια */
-  text-align: center; /* Κεντράρισμα του κειμένου μέσα στα παιδιά */
-  min-height: 60vh; /* Ελάχιστο ύψος για να πιάνει ένα καλό μέρος της οθόνης */
+  display: flex; 
+  flex-direction: column; 
+  justify-content: center; 
+  align-items: center; 
+  text-align: center; 
+  min-height: 60vh; 
   padding: 20px;
-  box-sizing: border-box; /* Για να συμπεριλαμβάνεται το padding στο συνολικό μέγεθος */
+  box-sizing: border-box; 
 }
 
 .search-feedback-content {
-  background-color: #f9f9f9; /* Ελαφρύ γκρι φόντο */
+  background-color: #f9f9f9; 
   padding: 30px 40px;
-  border-radius: 12px; /* Στρογγυλεμένες γωνίες */
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1); /* Διακριτική σκιά */
+  border-radius: 12px; 
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1); 
   max-width: 500px; /* Μέγιστο πλάτος για να μην απλώνεται πολύ σε μεγάλες οθόνες */
-  width: 90%; /* Πλάτος για μικρότερες οθόνες */
+  width: 90%; 
 }
 
 .search-feedback-icon {
-  font-size: 3.5em; /* Μέγεθος εικονιδίου/emoji */
-  display: block; /* Για να πιάνει όλο το πλάτος και να επιτρέπει margin auto */
+  font-size: 3.5em; 
+  display: block; 
   margin-bottom: 20px;
-  color: #555; /* Χρώμα εικονιδίου */
+  color: #555; 
 }
 
 .search-feedback-content h2 {

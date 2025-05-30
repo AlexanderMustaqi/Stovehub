@@ -1,4 +1,4 @@
-/* src/Profile/ProfilePage.css */
+
 .profile-page-container {
     display: flex;
     flex-direction: row;
@@ -9,10 +9,9 @@
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    height: auto; /* Ή κάποιο άλλο ύψος αν χρειάζεται */
-    /* Προσθήκη padding ή margin αν χρειάζεται για την εμφάνιση */
+    height: auto; 
     padding: 20px; 
-    flex-grow: 1; /* Για να παίρνει τον διαθέσιμο χώρο */
+    flex-grow: 1; 
 }
 
 .profile-upper-section {
@@ -21,12 +20,12 @@
     display: flex;
     flex-direction: row;
     justify-content: space-between;
-    height: 30%; /* Χρησιμοποιεί ποσοστό του γονικού ύψους */
+    height: 30%; 
     padding: 2%;
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
     margin-bottom: 3%;
-    min-height: 10%; /* Ελάχιστο ύψος ως ποσοστό */
-    /* max-height: 80%;  Μέγιστο ύψος ως ποσοστό αν χρειάζεται */
+    min-height: 10%; 
+    /* max-height: 80%; */
 }
 
 .profile-image-container {
@@ -50,16 +49,16 @@
 
 .profile-user-info {
     width: auto; /* Προσαρμόζεται στο περιεχόμενο */
-    flex-grow: 1; /* Παίρνει τον υπόλοιπο χώρο */
+    flex-grow: 1; 
     display: flex;
     flex-direction: column;
     justify-content: space-around; /* Καλύτερη κατανομή */
-    align-items: flex-start; /* Στοίχιση αριστερά */
+    align-items: flex-start; 
     margin-left: 20px; /* Μικρό κενό από την εικόνα */
 }
 
 .profile-user-info h5 {
-    margin: 5px 0; /* Λίγο κενό μεταξύ των πεδίων */
+    margin: 5px 0; 
     cursor: pointer; /* Για να δείχνει ότι είναι κλικαμπλ */
     padding: 5px;
     border-radius: 4px;
@@ -97,7 +96,7 @@
 }
 
 .profile-follow-button.following {
-    background-color: #6c757d; /* Πιο ουδέτερο χρώμα για "Unfollow" */
+    background-color: #6c757d; 
     color: #fff;
 }
 
@@ -105,30 +104,29 @@
     background-color: #5a6268;
 }
 
-/* Styles for the overlay and form (αντίστοιχα με τα formStyleSheet, ccstylesheet) */
 .profile-overlay {
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.5); /* Ημιδιαφανές μαύρο φόντο */
+  background-color: rgba(0, 0, 0, 0.5); 
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 1000; /* Για να είναι πάνω από τα άλλα στοιχεία */
+  z-index: 1000; 
 }
 
 .profile-change-form {
     padding: 25px;
-    background-color: #ffffff; /* Λευκό φόντο για τη φόρμα */
+    background-color: #ffffff; 
     border-radius: 8px;
     display: flex;
     flex-direction: column;
     justify-content: space-evenly;
     align-items: center;
     box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-    width: 300px; /* Ή όποιο πλάτος θέλεις */
+    width: 300px; 
 }
 
 .profile-change-form input[type="text"] {
@@ -144,7 +142,7 @@
     margin-top: 20px;
     display: flex;
     flex-direction: row;
-    justify-content: space-around; /* Ή center αν προτιμάς */
+    justify-content: space-around; 
     width: 100%;
 }
 
@@ -159,11 +157,11 @@
 .profile-form-actions button[type="submit"] {
     background-color: #5cb85c; /* Πράσινο */
     color: white;
-    margin-right: 10px; /* Κενό μεταξύ των κουμπιών */
+    margin-right: 10px; 
 }
 
 .profile-form-actions button[type="button"] {
-    background-color: #f0ad4e; /* Πορτοκαλί */
+    background-color: #f0ad4e; 
     color: white;
 }
 
@@ -190,19 +188,19 @@
 
 .profile-recipes-section {
     margin-top: 20px;
-    padding: 20px; /* Περισσότερο padding */
+    padding: 20px; 
     border-radius: 8px;
-    background: #ffffff; /* Λευκό φόντο */
-    box-shadow: 0 2px 4px rgba(0,0,0,0.05); /* Διακριτική σκιά */
+    background: #ffffff; 
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05); 
 }
 
 .profile-recipes-section h2 {
     margin-top: 0;
     margin-bottom: 15px;
     color: #333;
-    border-bottom: 1px solid #e0e0e0; /* Πιο απαλή γραμμή */
+    border-bottom: 1px solid #e0e0e0; 
     padding-bottom: 10px;
-    font-size: 1.5em; /* Μεγαλύτερος τίτλος */
+    font-size: 1.5em; 
 }
 
 .profile-recipes-list {
@@ -211,14 +209,14 @@
 }
 
 .profile-recipes-list li {
-    padding: 12px 0; /* Λίγο περισσότερο padding */
-    border-bottom: 1px solid #f0f0f0; /* Πολύ απαλή γραμμή */
-    font-size: 1rem; /* Βασικό μέγεθος γραμματοσειράς */
-    color: #454545; /* Σκουρότερο γκρι */
+    padding: 12px 0; 
+    border-bottom: 1px solid #f0f0f0; 
+    font-size: 1rem; 
+    color: #454545; 
     transition: background-color 0.2s ease-in-out;
 }
 .profile-recipes-list li:hover {
-    background-color: #f9f9f9; /* Απαλό hover effect */
+    background-color: #f9f9f9; 
 }
 
 .profile-recipes-list li:last-child {
@@ -232,13 +230,7 @@
 
 .profile-recipes-grid {
   display: grid;
-  /* 
-    Δημιουργεί στήλες που προσπαθούν να είναι τουλάχιστον 280px πλάτος, 
-    και γεμίζουν τον διαθέσιμο χώρο. 
-    Προσάρμοσε το minmax ανάλογα με το επιθυμητό μέγεθος των καρτών σου.
-    Το ProfileRecipeCard.css αναφέρει: "Το πλάτος θα καθοριστεί από το grid layout"
-  */
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 20px; /* Κενό μεταξύ των καρτών */
-  padding-top: 10px; /* Προαιρετικό: λίγο κενό πάνω από τις κάρτες */
+  gap: 20px; 
+  padding-top: 10px; 
 }

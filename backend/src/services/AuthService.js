@@ -11,7 +11,7 @@ class AuthService {
 
     /**
      * Creates an instance of AuthService.
-     * @param {DbService} dbService - The database service instance.
+     * @param {DbService} dbService 
      */
     constructor(dbService) {
         this.dbService = dbService;
@@ -19,9 +19,9 @@ class AuthService {
 
     /**
      * Authenticates a user based on email and password.
-     * @param {string} email - User's email.
-     * @param {string} password - User's password.
-     * @returns {Promise<boolean>} True if authenticated, false otherwise.
+     * @param {string} email 
+     * @param {string} password 
+     * @returns {Promise<boolean>} 
      */
     async authenticateUser(email, password) {
         const [rows] = await this.dbService.query(

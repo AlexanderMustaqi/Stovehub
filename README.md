@@ -7,6 +7,12 @@ Through Stovehub professional Chefs can also advertise themselves, their biograp
 Furthermore, Stovehub makes organizing group cookouts easy! Through the chat feature,voting and the group basket users can decide what they would like to cook!
 Join Stovehub now, and allow yourself to be lost in the culinary world!
 
+Our Team:
+Alexandros Moustaqi
+Panagiotis Ntelis
+Alexandros Karras
+Panagiotis Maroulis
+Athanasios Kandreviotis
 
 Technologies Used:
 Front-End Development: React.JS/Javascript

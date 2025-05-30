@@ -2,7 +2,7 @@ import mysql from 'mysql2/promise';
 
 /**
  * @class DbService
- * @description Handles all database connection and query operations.
+ * @description Encapsulates database operations using a MySQL connection pool.
  */
 class DbService {
     /**
@@ -12,18 +12,17 @@ class DbService {
     pool;
 
     /**
-     * Creates an instance of DbService.
-     * @param {object} config - Database connection configuration.
+     * @param {object} config 
      */
     constructor(config) {
         this.pool = mysql.createPool(config);
     }
 
     /**
-     * Executes a SQL query.
-     * @param {string} sql - The SQL query string.
-     * @param {Array<any>} [params=[]] - Parameters for the prepared statement.
-     * @returns {Promise<[Array<any>, mysql.FieldPacket[]]>} - Query result.
+     * SQL query.
+     * @param {string} sql 
+     * @param {Array<any>} [params=[]] 
+     * @returns {Promise<[Array<any>, mysql.FieldPacket[]]>} 
      */
     async query(sql, params = []) {
         try {
@@ -36,8 +35,7 @@ class DbService {
 
     /**
      * Gets a connection from the pool.
-     * Useful for transactions.
-     * @returns {Promise<mysql.PoolConnection>} - A database connection.
+     * @returns {Promise<mysql.PoolConnection>} 
      */
     async getConnection() {
         try {

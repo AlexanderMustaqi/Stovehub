@@ -6,7 +6,6 @@ function AddPostButton({ onClick }) {
     <div
       className="floating-image-button tooltip"
       onClick={onClick}
-      // title="Προσθήκη συνταγής" // Consider using title attribute for accessibility if tooltip is purely visual
     >
       <img
         src={Icon}

@@ -20,7 +20,6 @@ class FileUploaderService {
         // Multer storage for recipe images
         const recipeImageStorage = multer.diskStorage({
             destination: (req, file, cb) => {
-                // Ensure 'uploads/' directory exists in your project root
                 cb(null, 'uploads/');
             },
             filename: (req, file, cb) => {
@@ -32,7 +31,6 @@ class FileUploaderService {
         // Multer storage for profile pictures (pfp)
         const pfpStorage = multer.diskStorage({
             destination: (req, file, cb) => {
-                // Ensure 'uploads/pfp/' directory exists in your project root
                 cb(null, 'uploads/pfp/');
             },
             filename: (req, file, cb) => {
@@ -41,7 +39,7 @@ class FileUploaderService {
         });
         this.uploadPfp = multer({
             storage: pfpStorage,
-            limits: { fileSize: 5 * 1024 * 1024 }, // 5MB file size limit
+            limits: { fileSize: 5 * 1024 * 1024 }, 
             fileFilter: (req, file, cb) => {
                 if (file.mimetype.startsWith('image/')) {
                     cb(null, true);

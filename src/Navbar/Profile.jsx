@@ -47,16 +47,15 @@ function Profile() {
     }
 
     const handleProfileClicked = () => {
-        setpopUpFlag(false); // Κλείσιμο του pop-up
-        nav("/profile");
+        setpopUpFlag(false); 
     }
     const handleLogOutClicked = () => {
-        setpopUpFlag(false); // Κλείσιμο του pop-up
+        setpopUpFlag(false); 
         contextLogout(); // Κλήση της συνάρτησης logout από το context
         nav("/");
     }
     const handleAdminPanelClicked = () => {
-        setpopUpFlag(false); // Κλείσιμο του pop-up
+        setpopUpFlag(false); 
         nav("/home/admin-panel"); // Αλλαγή της διαδρομής
     }
     const handleSettingsClicked = () => {
@@ -68,7 +67,7 @@ function Profile() {
             
             {popUpFlag && (
                <div style={stylesheet2}>
-                    {(currentUser) ? // Έλεγχos αν υπάρχει currentUser (αν είναι συνδεδεμένος)
+                    {(currentUser) ? // Έλεγχos αν υπάρχει currentUser
                     (<div style={stylesheet1}>
                         <button style={stylesheet3} onClick={handleProfileClicked}>Profile</button>
                         {currentUser.rank === 'admin' && ( // Εμφάνιση μόνο αν είναι admin

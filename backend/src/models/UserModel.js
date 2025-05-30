@@ -15,7 +15,7 @@ class UserModel {
      * Creates an instance of UserModel.
      * @param {DbService} dbService - The database service instance.
      */
-    constructor(dbService) {
+        constructor(dbService) {
         this.dbService = dbService;
     }
 

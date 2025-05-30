@@ -23,8 +23,8 @@
   flex-direction: column;
   gap: 12px;
   animation: fadeIn 0.3s ease-out;
-  max-height: 90vh; /* Set a maximum height for the modal */
-  overflow-y: auto; /* Enable vertical scrolling within the modal */
+  max-height: 90vh; 
+  overflow-y: auto; 
 }
 
 .modal-close {
@@ -68,7 +68,7 @@
   width: 100%;
   height: auto;
   object-fit: fill; 
-  max-height: 300px; /* Προαιρετικό μέγιστο ύψος */
+  max-height: 300px; 
 }
 
 .submit-btn {
@@ -145,13 +145,13 @@
   border: 1px solid #ddd;
   border-radius: 4px;
   background: #fff;
-  margin: 5px 0; /* Added margin for better spacing */
+  margin: 5px 0; 
 }
 
 .time-input {
   display: flex;
   gap: 10px;
-  margin: 5px 0; /* Added margin for better spacing */
+  margin: 5px 0; 
 }
 
 .time-input input {
@@ -161,7 +161,7 @@
 
 .time-input select {
   flex: 1;
-  padding: 0.8rem; /* Ensure consistent padding */
+  padding: 0.8rem; 
 }
 
 .form-group {
@@ -197,7 +197,7 @@
   cursor: pointer;
   background-color: #f8f8f8;
   transition: border-color 0.3s ease;
-  margin-bottom: 0.5rem; /* Προσθέτουμε λίγο χώρο κάτω από το drop area */
+  margin-bottom: 0.5rem; 
 }
 
 .drop-area.dragging {
@@ -223,18 +223,18 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  margin-bottom: 0.5rem; /* Προσθέτουμε χώρο κάτω από την εικόνα */
+  margin-bottom: 0.5rem; 
 }
 
 
 .image-actions {
-  display: none; /* Κρύβουμε τα επικαλυπτικά κουμπιά */
+  display: none; 
 }
 
 .image-actions-below {
   display: flex;
   gap: 0.5rem;
-  justify-content: flex-end; /* Ευθυγράμμιση των κουμπιών δεξιά */
+  justify-content: flex-end; 
   margin-top: 0.5rem;
 }
 
@@ -264,20 +264,19 @@
 .modal textarea {
   width: 95%;
   min-height: 100px;
-  padding: 1rem; /* Αυξάνουμε το padding */
+  padding: 1rem; 
   border-radius: 11px;
-  border: 2px solid #be7b23; /* Κάνουμε την περίμετρο πιο διακριτική */
+  border: 2px solid #be7b23; 
   font-size: 1rem;
-  resize: vertical; /* Επιτρέπουμε την κατακόρυφη αλλαγή μεγέθους */
+  resize: vertical; 
   font-family: inherit;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05); /* Προσθέτουμε μια διακριτική σκίαση */
-  transition: border-color 0.3s ease, box-shadow 0.3s ease; /* Προσθέτουμε transitions για πιο ομαλές αλλαγές */
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05); 
+  transition: border-color 0.3s ease, box-shadow 0.3s ease; 
 }
 
 .modal textarea:focus {
-  border-color: #007bff; /* Αλλάζουμε το χρώμα της περιμέτρου στο focus */
-  box-shadow: 0 1px 6px rgba(0, 123, 255, 0.2); /* Ενισχύουμε τη σκίαση στο focus */
-  /*outline: none; /* Αφαιρούμε την προεπιλεγμένη εμφάνιση focus */
+  border-color: #007bff; 
+  box-shadow: 0 1px 6px rgba(0, 123, 255, 0.2); 
 }
 
 .file-input {
@@ -290,15 +289,15 @@
 
 /* WebKit (Chrome, Safari, Edge) */
 ::-webkit-scrollbar {
-  width: 8px; /* Adjust width as needed */
+  width: 8px; 
 }
 
 ::-webkit-scrollbar-thumb {
   background-color: #aaa;
-  border-radius: 10px; /* Add border-radius to the thumb */
+  border-radius: 10px; 
 }
 
 ::-webkit-scrollbar-track {
   background-color: #f1f1f1;
-  border-radius: 10px; /* Optionally add border-radius to the track */
+  border-radius: 10px; 
 }

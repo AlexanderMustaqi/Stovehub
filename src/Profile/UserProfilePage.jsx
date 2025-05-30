@@ -1,23 +1,23 @@
-import React, { useEffect, useState, useRef, useContext } from "react"; // Προσθήκη React και hooks
-import { useParams, useNavigate } from "react-router-dom"; // Για να πάρουμε το userId από το URL και για πλοήγηση
+import React, { useEffect, useState, useRef, useContext } from "react"; 
+import { useParams, useNavigate } from "react-router-dom"; 
 import Navbar from "../Navbar/Navbar";
 import ChatsBar from "../ChatsBar/ChatsBar";
 import api from "../api/api";
-import { UserContext } from '../App'; // Import UserContext
+import { UserContext } from '../App'; 
 import './ProfilePage.css'; 
 import { FilterSearchOverlay } from '../Navbar/FilterSearchOverlay.jsx'; // Για την αναζήτηση
 import ProfileRecipeCard from './ProfileRecipeCard'; 
 
 export default function UserProfilePage() {
     const { userId } = useParams(); // ID του χρήστη του οποίου το προφίλ βλέπουμε
-    const { currentUser } = useContext(UserContext); // Get the full currentUser object
-    const loggedInUserId = currentUser?.id; // ID του συνδεδεμένου χρήστη (will be undefined if currentUser is null)
+    const { currentUser } = useContext(UserContext); 
+    const loggedInUserId = currentUser?.id; 
 
     const [profileData, setProfileData] = useState(null);
     const [recipes, setRecipes] = useState([]);
     const profileImageRef = useRef(null); // Ref για την εικόνα προφίλ
-    const [loadingProfile, setLoadingProfile] = useState(true); // Νέα κατάσταση για τη φόρτωση του προφίλ
-    const [loadingFollowData, setLoadingFollowData] = useState(true); // Κατάσταση για τη φόρτωση των follow data
+    const [loadingProfile, setLoadingProfile] = useState(true); 
+    const [loadingFollowData, setLoadingFollowData] = useState(true); 
     const navigate = useNavigate();
     const [filterVisible, setFilterVisible] = useState(false);
     const [isFollowing, setIsFollowing] = useState(false);
@@ -39,7 +39,6 @@ export default function UserProfilePage() {
 
             if (Array.isArray(followersList)) {
                 setFollowerCount(followersList.length);
-                // Έλεγχος αν ο loggedInUserId (από το context) είναι ανάμεσα στους followers
                 if (loggedInUserId && followersList.some(follower => follower.user_id === loggedInUserId)) {
                     setIsFollowing(true);
                 } else {
@@ -83,11 +82,8 @@ export default function UserProfilePage() {
             }
         }
         fetchUserProfileData();
-
-        // Call fetchFollowDetails if we are viewing a profile (userId exists).
-        // The behavior of fetchFollowDetails itself (checking isFollowing) depends on loggedInUserId.
+        // Αν ο χρήστης είναι συνδεδεμένος, φέρνουμε και τα follow details
         if (userId) {
-            // loggedInUserId is derived from UserContext (currentUser?.id)
             fetchFollowDetails();
         }
     }, [userId, loggedInUserId]); // Το effect τρέχει ξανά όταν αλλάξει το userId ή το loggedInUserId
@@ -138,7 +134,6 @@ export default function UserProfilePage() {
         } catch (err) {
             console.error("[UserProfilePage] Error during follow/unfollow action:", err.response ? err.response.data : err.message);
             alert(`Σφάλμα: ${err.response?.data?.message || 'Προέκυψε ένα σφάλμα κατά την ενέργεια follow/unfollow.'}`);
-            // Σε περίπτωση σφάλματος, καλό είναι να ξαναφέρουμε την κατάσταση για να είναι συνεπής
             await fetchFollowDetails();
         }
     };
@@ -213,7 +208,6 @@ export default function UserProfilePage() {
                     <div className="profile-upper-section">
                         <div className="profile-image-container">
                             <img 
-                                //ref={profileImageRef} 
                                 className="profile-image"
                                 src={
                                     profileData?.profile_image_url
@@ -239,7 +233,6 @@ export default function UserProfilePage() {
                         </div>
                         {/* Έλεγχος για να μην εμφανίζεται το κουμπί follow αν ο χρήστης βλέπει το δικό του προφίλ μέσω αυτού του URL */}
                         {!loadingFollowData && loggedInUserId && profileData && profileData.user_id && loggedInUserId !== profileData.user_id && (
-                            // Εμφάνιση κουμπιού μόνο αν δεν φορτώνουν τα follow data ΚΑΙ οι υπόλοιπες συνθήκες ισχύουν
                                 <div className="profile-follow-button-container">
                                     <button className={`profile-follow-button ${isFollowing ? 'following' : ''}`} onClick={handleFollowToggle}>
                                         {isFollowing ? 'Unfollow' : 'Follow'}
@@ -251,7 +244,7 @@ export default function UserProfilePage() {
                     <div className="profile-recipes-section">
                         <h2>Συνταγές Χρήστη</h2>
                         {recipes.length > 0 ? (
-                            <div className="profile-recipes-grid"> {/* Αλλαγή από ul σε div με grid class */}
+                            <div className="profile-recipes-grid"> 
                                 {recipes.map((recipe) => (
                                     <ProfileRecipeCard key={recipe.id} recipe={recipe} />
                                 ))}
