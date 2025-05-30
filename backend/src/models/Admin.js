@@ -16,8 +16,8 @@ export class Admin extends User {
 
     /**
      * Edits the profile of another user.
-     * @param {number} targetUserId - The ID of the user whose profile is to be edited.
-     * @param {object} newData - Data to update (e.g., { username, email, bio, rank, profile_image_url }).
+     * @param {number} targetUserId 
+     * @param {object} newData 
      * @returns {Promise<{message: string, updatedFields: object}>}
      */
     async editUserProfile(targetUserId, newData) {
@@ -66,7 +66,7 @@ export class Admin extends User {
 
     /**
      * Deletes another user's profile.
-     * @param {number} targetUserId - The ID of the user to delete.
+     * @param {number} targetUserId 
      * @returns {Promise<{message: string}>}
      */
     async deleteUserProfile(targetUserId) {
@@ -109,9 +109,9 @@ export class Admin extends User {
 
     /**
      * Handles a user-submitted report.
-     * @param {number} reportId - The ID of the report.
-     * @param {'resolved' | 'dismissed' | 'action_taken'} action - The action to take on the report.
-     * @param {string} [adminNotes] - Optional notes from the admin.
+     * @param {number} reportId 
+     * @param {'resolved' | 'dismissed' | 'action_taken'} action 
+     * @param {string} [adminNotes] 
      * @returns {Promise<{message: string}>}
      */
     async handleReport(reportId, action, adminNotes = '') {
@@ -135,11 +135,10 @@ export class Admin extends User {
         );
 
         if (result.affectedRows === 0) {
-            // This might happen if the report_id is valid but was deleted just before this update.
+            // If no rows were affected
             throw new Error(`Failed to update report ${reportId}. It might have been deleted or an issue occurred.`);
         }
-
-        // Log the action in a separate admin action log table if needed
+        // Log the action
         console.log(`Report ${reportId} status updated to ${action} by admin ${this.username}.`);
         return { message: `Report ${reportId} handled successfully with action: ${action}.` };
     }

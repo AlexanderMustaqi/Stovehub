@@ -9,8 +9,8 @@ import UserModel from './UserModel.js';
 export class RegisteredUser extends User {
     /**
      * Creates an instance of RegisteredUser.
-     * @param {import('../services/DbService.js').default} dbService - The database service instance.
-     * @param {object} userData - The raw user data from the database.
+     * @param {import('../services/DbService.js').default} dbService 
+     * @param {object} userData 
      */
     constructor(dbService, userData) {
         super(dbService, userData);
@@ -22,7 +22,6 @@ export class RegisteredUser extends User {
 
     /**
      *  Posts a new recipe on behalf of the current registered user.
-     * Ensures the recipe is associated with this user's email.
      * @param {object} recipeData 
      * @param {string} recipeData.title 
      * @param {string} recipeData.description 
@@ -32,13 +31,13 @@ export class RegisteredUser extends User {
      * @param {string} recipeData.category 
      * @param {Array<string>|string} recipeData.ingredients 
      * @param {string|null} [recipeData.imageUrl] 
-      * @returns {Promise<object>} The result from RecipeModel.createRecipe (e.g., { userId, username }).
+      * @returns {Promise<object>} 
      */
     async postRecipe(recipeData) {
         console.log(`User ${this.username} (ID: ${this.userId}, Rank: ${this.rank}) is posting a recipe: ${recipeData.title}`);
         const recipeModelInstance = new RecipeModel(this.dbService);
         const recipePayload = {
-            ...recipeData, // recipeData comes from the frontend
+            ...recipeData, 
             userEmail: this.email 
         };
         return await recipeModelInstance.createRecipe(recipePayload);
@@ -48,9 +47,9 @@ export class RegisteredUser extends User {
     /**
      /**
      * Creates a new gallery for the current user.
-     * @param {string} galleryName - The name of the new gallery.
-     * @param {string} [galleryImageUrl='NaN'] - The image URL for the gallery.
-     * @returns {Promise<{insertId: number, message: string}>} Result of the gallery creation.
+     * @param {string} galleryName 
+     * @param {string} [galleryImageUrl='NaN'] 
+     * @returns {Promise<{insertId: number, message: string}>} 
      */
     
     async createGallery(galleryName, galleryImageUrl = 'NaN') {
@@ -76,8 +75,8 @@ export class RegisteredUser extends User {
 
     /**
      * Adds a recipe to one of the user's galleries.
-     * @param {number} galleryId - The ID of the gallery.
-     * @param {number} recipeId - The ID of the recipe.
+     * @param {number} galleryId 
+     * @param {number} recipeId 
      * @returns {Promise<{insertId: number, message: string}>}
      */
     async addRecipeToGallery(galleryId, recipeId) {
@@ -95,9 +94,9 @@ export class RegisteredUser extends User {
 
     /**
      * Removes a recipe from one of the user's galleries.
-     * @param {number} galleryId - The ID of the gallery.
-     * @param {number} recipeId - The ID of the recipe.
-     * @returns {Promise<boolean>} True if removal was successful.
+     * @param {number} galleryId 
+     * @param {number} recipeId 
+     * @returns {Promise<boolean>} 
      */
     async removeRecipeFromGallery(galleryId, recipeId) {
         const [galleryRows] = await this.dbService.query('SELECT user_id FROM gallery WHERE gallery_id = ? AND user_id = ?', [galleryId, this.userId]);
@@ -110,8 +109,8 @@ export class RegisteredUser extends User {
 
     /**
      * Deletes one of the user's galleries.
-     * @param {number} galleryId - The ID of the gallery to delete.
-     * @returns {Promise<boolean>} True if deletion was successful.
+     * @param {number} galleryId 
+     * @returns {Promise<boolean>} 
      */
     async deleteGallery(galleryId) {
         const [result] = await this.dbService.query('DELETE FROM gallery WHERE gallery_id = ? AND user_id = ?', [galleryId, this.userId]);

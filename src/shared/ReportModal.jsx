@@ -56,7 +56,7 @@ function ReportModal({ show, onClose, onSubmit, itemType, itemId }) {
               value={reason}
               onChange={(e) => {
                 setReason(e.target.value);
-                setError(''); // Clear error when reason changes
+                setError(''); 
               }}
               required
             >

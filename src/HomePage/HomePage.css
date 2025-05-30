@@ -21,10 +21,10 @@
 }
 
 .search-feedback-content {
-  background-color: #f9f9f9; /* Ελαφρύ γκρι φόντο */
+  background-color: #f9f9f9; 
   padding: 30px 40px;
   border-radius: 12px; 
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1); /* Διακριτική σκιά */
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1); 
   max-width: 500px; /* Μέγιστο πλάτος για να μην απλώνεται πολύ σε μεγάλες οθόνες */
   width: 90%; 
 }
@@ -33,7 +33,7 @@
   font-size: 3.5em; 
   display: block; 
   margin-bottom: 20px;
-  color: #555; /* Χρώμα εικονιδίου */
+  color: #555; 
 }
 
 .search-feedback-content h2 {

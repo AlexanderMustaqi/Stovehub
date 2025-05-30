@@ -1,5 +1,5 @@
-import React, { useContext, useState, useEffect } from 'react'; // Προσθήκη useState, useEffect
-import { Routes, Route, Navigate, useNavigate } from 'react-router-dom'; // Προσθήκη useNavigate
+import React, { useContext, useState, useEffect } from 'react'; 
+import { Routes, Route, Navigate, useNavigate } from 'react-router-dom'; 
 import Navbar from "./Navbar/Navbar.jsx";
 import ChatsBar from "./ChatsBar/ChatsBar.jsx";
 import AddPostButton from './AddPostButton/AddPostButton.jsx';
@@ -19,10 +19,7 @@ function AppContent() {
   const [filterVisible, setFilterVisible] = useState(false);
   const { currentUser } = useContext(UserContext); // Πρόσβαση στο currentUser για έλεγχο rank
   const [modalVisible, setModalVisible] = useState(false);
-  const [currentUserId, setCurrentUserId] = useState(null); // Για να αποθηκεύσουμε το user_id του συνδεδεμένου χρήστη
-  // Το state 'filters' μπορεί να μην είναι πλέον απαραίτητο εδώ αν η HomePage δεν το χρησιμοποιεί
-  // και η SearchResultsPage παίρνει φίλτρα από το URL.
-  // const [filters, setFilters] = useState(null); 
+  const [currentUserId, setCurrentUserId] = useState(null); 
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -34,7 +31,7 @@ function AppContent() {
           setCurrentUserId(response.data.user_id);
         } catch (error) {
           console.error("Error fetching user_id:", error);
-          setCurrentUserId(null); // Ensure it's null on error
+          setCurrentUserId(null); 
         }
       }
     };
@@ -43,13 +40,10 @@ function AppContent() {
 
   const handleNewPost = post => {
     console.log("Νέα συνταγή:", post);
-    // Εδώ μπορείς να προσθέσεις την αποθήκευση της συνταγής
   };
 
   const handleApplyFilters = criteria => {
-    // console.log("[AppContent.jsx] Applying filters:", criteria); // Μπορεί να ενεργοποιηθεί για debugging
     
-    // Καθαρισμός κριτηρίων από null, undefined ή κενά strings
     const activeCriteria = {};
     for (const key in criteria) {
       if (criteria[key] != null && criteria[key] !== '') {
@@ -58,8 +52,7 @@ function AppContent() {
     }
 
     const queryParams = new URLSearchParams(activeCriteria).toString();
-    const targetPath = `/home/search-results?${queryParams}`; // Άλλαξε σε απόλυτη διαδρομή
-    // console.log("[AppContent.jsx] Navigating to:", targetPath); // Μπορεί να ενεργοποιηθεί για debugging
+    const targetPath = `/home/search-results?${queryParams}`; 
     try {
       navigate(targetPath); 
       // console.log("[AppContent.jsx] Navigation successful");
@@ -73,7 +66,6 @@ function AppContent() {
     const userEmail = sessionStorage.getItem('email');
     if (!userEmail) {
       alert('Παρακαλώ συνδεθείτε ή εγγραφείτε για να δημιουργήσετε μια συνταγή.');
-      // Δεν ανοίγουμε το modal αν ο χρήστης δεν είναι συνδεδεμένος
     } else {
       setModalVisible(true); // Ανοίγουμε το modal μόνο αν υπάρχει email
     }
@@ -91,11 +83,11 @@ function AppContent() {
         <div className="app">
           <Navbar onSearchClick={handleSearchClick} />
           <div className="lowerdiv">
-            <AddPostButton onClick={handleOpenAddPostModal} /> {/* Χρήση της νέας συνάρτησης */}
+            <AddPostButton onClick={handleOpenAddPostModal} /> 
             <Routes>
               <Route index element={<HomePage />} /> {/* Χρήση του 'index' για τη βασική διαδρομή /home */}
-              <Route path="search-results" element={<SearchResultsPage />} /> {/* Σχετική διαδρομή */}
-              <Route path="recipes/:recipeId" element={<RecipeDetailPage />} /> {/* Σχετική διαδρομή */}
+              <Route path="search-results" element={<SearchResultsPage />} /> 
+              <Route path="recipes/:recipeId" element={<RecipeDetailPage />} /> 
               <Route
                 path="admin-panel"
                 element={
@@ -106,7 +98,6 @@ function AppContent() {
                   )
                 }
               />
-              {/* Άλλα routes μπορούν να προστεθούν εδώ */}
             </Routes>
             <ChatsBar />
           </div>

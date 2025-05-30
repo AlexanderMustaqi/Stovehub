@@ -14,7 +14,6 @@ const UserCard = ({ user }) => {
 
   return (
     <div className="user-card">
-      {/* Αλλάζουμε το link για να οδηγεί στο προφίλ του άλλου χρήστη με το user_id */}
       <Link to={`/user-profile/${user.user_id}`} className="user-card-link">
         <img 
           src={profileImageUrl} 
@@ -24,7 +23,6 @@ const UserCard = ({ user }) => {
         />
         <div className="user-card-info">
           <h3 className="user-card-username">{user.username}</h3>
-          {/* Μπορείς να προσθέσεις κι άλλες πληροφορίες εδώ, π.χ. user.bio αν το έχεις */}
         </div>
       </Link>
     </div>

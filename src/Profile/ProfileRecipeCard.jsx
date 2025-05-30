@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import './ProfileRecipeCard.css'; // Θα δημιουργήσουμε αυτό το αρχείο CSS
+import './ProfileRecipeCard.css'; 
 import No_ImageIcon from './assets/no_image.jpg'; // Εικονίδιο για όταν δεν υπάρχει εικόνα
 
 const ProfileRecipeCard = ({ recipe }) => {
@@ -21,7 +21,7 @@ const ProfileRecipeCard = ({ recipe }) => {
           alt={recipe.title || 'Εικόνα Συνταγής'}
           className="profile-recipe-card-image"
           onError={(e) => {
-            e.target.onerror = null; // Αποτρέπει ατέρμονα loops αν και η default εικόνα αποτύχει
+            e.target.onerror = null; 
             e.target.src = No_ImageIcon;
           }}
         />

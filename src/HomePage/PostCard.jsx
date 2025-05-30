@@ -13,7 +13,7 @@ const GENERIC_PROFILE_IMAGE_URL = 'http://localhost:5000/uploads/pfp/default-pfp
 
 function PostCard({ post }) {
   const usernameToDisplay = post.posted_by || 'Anonymous';
-  const navigate = useNavigate(); // Αρχικοποίηση του useNavigate
+  const navigate = useNavigate(); 
   const currentUserId = useContext(IdContext); // Παίρνουμε το user_id του τρέχοντος χρήστη
 
   
@@ -57,7 +57,7 @@ function PostCard({ post }) {
         setLocalDislikes(prev => prev - 1);
       }
 
-      // Αύξησε τον μετρητή αν προστέθηκε νέα αντίδραση (και δεν ήταν ήδη αυτού του τύπου)
+      // Αύξησε τον μετρητή αν προστέθηκε νέα αντίδραση 
       if (newReactionType === 'like' && previousReaction !== 'like') {
         setLocalLikes(prev => prev + 1);
       }
@@ -123,7 +123,6 @@ function PostCard({ post }) {
           <p className="post-author">{usernameToDisplay}</p>
         </div>
 
-        {/* Εμφάνιση της εικόνας της συνταγής ή του placeholder */}
         <div className="post-image-container">
           <img 
             src={post.imageUrl ? post.imageUrl : No_imageIcon} 
@@ -137,9 +136,7 @@ function PostCard({ post }) {
         </div>
         <div className="post-info">
           <h2 className="post-title">{post.title}</h2>
-          {/* Το username αφαιρέθηκε από εδώ */}
           <p className="post-meta">
-            {/* Τα κουμπιά like/dislike και τα σχόλια παραμένουν εδώ ή μπορούν να μετακινηθούν ανάλογα με το design */}
             <button
               onClick={handleLike}
               className={`like-dislike-btn ${userReaction === 'like' ? 'active-like' : ''}`}

@@ -9,7 +9,6 @@
   background-color: #f7d2a7;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.08);
   transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
-  /* Το πλάτος θα καθοριστεί από το grid layout */
 }
 
 .profile-recipe-card:hover {
@@ -19,9 +18,9 @@
 
 .profile-recipe-card-image-container {
   width: 100%;
-  padding-top: 75%; /* Aspect ratio 4:3 (ύψος είναι 75% του πλάτους) */
+  padding-top: 75%; 
   position: relative;
-  background-color: #f5f5f5; /* Χρώμα φόντου μέχρι να φορτώσει η εικόνα */
+  background-color: #f5f5f5; 
 }
 
 .profile-recipe-card-image {
@@ -30,7 +29,7 @@
   left: 0;
   width: 100%;
   height: 100%;
-  object-fit: cover; /* Καλύπτει τον χώρο χωρίς παραμόρφωση */
+  object-fit: cover; 
 }
 
 .profile-recipe-card-info {
@@ -42,7 +41,6 @@
   font-size: 0.95rem;
   font-weight: 600;
   margin: 0;
-  /* Για να μην σπάει ο τίτλος σε πολλές γραμμές και να εμφανίζει "..." */
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;

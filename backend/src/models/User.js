@@ -1,8 +1,8 @@
 import UserModel from './UserModel.js';
 import RecipeModel from './RecipeModel.js';
+
 /**
  * @class User
- * @description Base class for all user types.
  */
 export class User {
     /** @type {import('../services/DbService.js').default} */
@@ -11,13 +11,13 @@ export class User {
     username;
     email;
     profileImageUrl;
-    rank; // 'reg', 'admin', 'chef' from user_base table
+    rank; // 'reg', 'admin', 'chef' 
     bio;
 
     /**
      * Creates an instance of User.
-     * @param {import('../services/DbService.js').default} dbService - The database service instance.
-     * @param {object} userData - The raw user data from the database.
+     * @param {import('../services/DbService.js').default} dbService 
+     * @param {object} userData 
      * @param {number} userData.user_id
      * @param {string} userData.username
      * @param {string} userData.email
@@ -43,11 +43,10 @@ export class User {
 
     /**
      * Updates the profile of the current user.
-     * This method is for the user updating their OWN profile.
-     * @param {object} newData - Object containing data to update.
+     * @param {object} newData 
      * @param {string} [newData.username]
      * @param {string} [newData.bio]
-     * @param {string} [newData.profileImageUrl] // For profile_image_url, ensure path is correct
+     * @param {string} [newData.profileImageUrl] 
      * @returns {Promise<void>}
      */
     async updateProfile(newData) {
@@ -99,15 +98,14 @@ export class User {
             throw new Error('You cannot follow yourself.');
         }
         const userModelInstance = new UserModel(this.dbService);
-        // UserModel.addFollower expects (userBeingFollowedEmail, userFollowingEmail)
         await userModelInstance.addFollower(targetUserEmail, this.email);
         console.log(`User ${this.username} (Email: ${this.email}) is now following ${targetUserEmail}`);
     }
 
     /**
      * Allows the current user to unfollow another user.
-     * @param {string} targetUserEmail - The email of the user to unfollow.
-     * @returns {Promise<boolean>} True if unfollowed successfully, false otherwise.
+     * @param {string} targetUserEmail 
+     * @returns {Promise<boolean>} 
      */
     async unfollow(targetUserEmail) {
         const userModelInstance = new UserModel(this.dbService);
@@ -154,10 +152,7 @@ export class User {
      * @returns {Promise<Array<object>>}
      */
     async getMyFollowing() {
-        // This would require a new method in UserModel, e.g., getFollowing(userId)
-        // For now, let's assume UserModel has or will have it.
         const userModelInstance = new UserModel(this.dbService);
-        // Example: return await userModelInstance.getFollowing(this.userId);
         const [result] = await this.dbService.query(
             `SELECT ub.user_id, ub.username, ub.profile_image_url FROM followers f
              JOIN user_base ub ON f.main_user_id = ub.user_id
@@ -178,7 +173,7 @@ export class User {
 
     /**
      * Retrieves the user's rank.
-     * @returns {string} The user's rank (e.g., 'reg', 'chef', 'admin').
+     * @returns {string} 
      */ 
     async getMyRank() {
         return this.rank;

@@ -1,4 +1,4 @@
-/* c:\Users\Panos\Desktop\TL_kwdikas\Stovehub\src\shared\ReportModal.css */
+
 .report-modal-overlay {
     position: fixed;
     top: 0;
@@ -9,7 +9,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    z-index: 1050; /* Ensure it's above other content */
+    z-index: 1050; 
   }
   
   .report-modal-content {

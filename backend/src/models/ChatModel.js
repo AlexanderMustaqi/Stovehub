@@ -16,8 +16,8 @@ class ChatModel {
 
     /**
      * Retrieves chats for a given user email.
-     * @param {string} email - User's email.
-     * @returns {Promise<Array<object>>} List of chat objects.
+     * @param {string} email 
+     * @returns {Promise<Array<object>>} 
      */
     async getChatsForUser(email) {
         const [userRows] = await this.dbService.query(`SELECT user_id FROM user_base WHERE email = ?;`, [email]);
@@ -36,8 +36,8 @@ class ChatModel {
 
     /**
      * Retrieves messages for a specific chat ID.
-     * @param {number} chatId - The ID of the chat.
-     * @returns {Promise<Array<object>>} List of message objects.
+     * @param {number} chatId 
+     * @returns {Promise<Array<object>>} 
      */
     async getMessagesForChat(chatId) {
         const [rows] = await this.dbService.query(

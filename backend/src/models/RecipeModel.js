@@ -1,6 +1,6 @@
 /**
  * @class RecipeModel
- * @description Manages all recipe-related database operations and business logic.
+ * @description Handles recipe-related database operations.
  */
 class RecipeModel {
     /**
@@ -11,7 +11,7 @@ class RecipeModel {
 
     /**
      * Creates an instance of RecipeModel.
-     * @param {DbService} dbService - The database service instance.
+     * @param {DbService} dbService 
      */
     constructor(dbService) {
         this.dbService = dbService;
@@ -51,8 +51,8 @@ class RecipeModel {
 
     /**
      * Retrieves all recipes.
-     * @param {number|null} currentUserId - ID of the current logged-in user for reaction status.
-     * @returns {Promise<Array<object>>} List of recipes.
+     * @param {number|null} currentUserId 
+     * @returns {Promise<Array<object>>} 
      */
     async getAllRecipes(currentUserId = null) {
         let sqlQuery = `
@@ -87,9 +87,9 @@ class RecipeModel {
 
     /**
      * Searches for recipes based on various filters.
-     * @param {object} filters - Search filters (query, category, difficulty, prepTime, ingredients).
-     * @param {number|null} currentUserId - ID of the current logged-in user for reaction status.
-     * @returns {Promise<Array<object>>} List of matching recipes.
+     * @param {object} filters 
+     * @param {number|null} currentUserId 
+     * @returns {Promise<Array<object>>} 
      */
     async searchRecipes(filters, currentUserId = null) {
         let sql = `
@@ -145,9 +145,9 @@ class RecipeModel {
 
     /**
      * Retrieves a single recipe by ID.
-     * @param {number} recipeId - The ID of the recipe.
-     * @param {number|null} currentUserId - ID of the current logged-in user for reaction status.
-     * @returns {Promise<object|null>} The recipe object or null if not found.
+     * @param {number} recipeId 
+     * @param {number|null} currentUserId 
+     * @returns {Promise<object|null>} 
      */
     async getRecipeById(recipeId, currentUserId = null) {
         let sqlQuery = `
@@ -218,8 +218,8 @@ class RecipeModel {
 
     /**
      * Retrieves comments for a specific recipe.
-     * @param {number} recipeId - The ID of the recipe.
-     * @returns {Promise<Array<object>>} List of comments.
+     * @param {number} recipeId 
+     * @returns {Promise<Array<object>>} 
      */
     async getRecipeComments(recipeId) {
         const [comments] = await this.dbService.query(
@@ -236,10 +236,10 @@ class RecipeModel {
 
     /**
      * Adds a new comment to a recipe.
-     * @param {number} recipeId - The ID of the recipe.
-     * @param {number} userId - The ID of the user posting the comment.
-     * @param {string} commentText - The text of the comment.
-     * @returns {Promise<object>} The newly added comment object.
+     * @param {number} recipeId 
+     * @param {number} userId 
+     * @param {string} commentText 
+     * @returns {Promise<object>} 
      */
     async addRecipeComment(recipeId, userId, commentText) {
         const [result] = await this.dbService.query(
@@ -259,7 +259,7 @@ class RecipeModel {
 
     /**
      * Retrieves recipes posted by a specific user.
-     * @param {number} userId - The ID of the user.
+     * @param {number} userId 
      * @returns {Promise<Array<object>>} List of recipes.
      */
     async getRecipesByUserId(userId) {
@@ -269,8 +269,8 @@ class RecipeModel {
 
     /**
      * Retrieves recipes associated with a specific gallery.
-     * @param {number} galleryId - The ID of the gallery.
-     * @returns {Promise<Array<object>>} List of recipes in the gallery.
+     * @param {number} galleryId 
+     * @returns {Promise<Array<object>>} 
      */
     async getRecipesByGalleryId(galleryId) {
         const [result] = await this.dbService.query(

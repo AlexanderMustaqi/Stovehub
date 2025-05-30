@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from 'react'; // Αφαιρέθηκε το useContext
+import React, { useState, useEffect, useContext } from 'react'; 
 import { useParams, Link } from 'react-router-dom';
 import api from '../api/api';
 import './RecipeDetailPage.css'; 
@@ -9,7 +9,7 @@ import ReportIcon from '../HomePage/assets/alert-circle-outline.svg'; // Εικ�
 import { IdContext } from '../ChatsBar/ChatsBar';
 import ReportModal from '../shared/ReportModal.jsx'; // Import το ReportModal
 
-// Ορισμός μιας generic εικόνας προφίλ (αντίστοιχα με το PostCard)
+// Ορισμός μιας generic εικόνας προφίλ 
 const GENERIC_PROFILE_IMAGE_URL = 'http://localhost:5000/uploads/pfp/default-pfp.svg';
 
 function Comment({ comment, onReportComment, currentUserId }) {
@@ -47,8 +47,7 @@ function RecipeDetailPage() {
   const { recipeId } = useParams(); // Παίρνουμε το ID από το URL
   const [comments, setComments] = useState([]);
   const [newCommentText, setNewCommentText] = useState('');
-  const currentUserId = useContext(IdContext); // Χρήση του IdContext για να πάρουμε το userId του συνδεδεμένου χρήστη
-  // State για τα reactions, παρόμοια με το PostCard
+  const currentUserId = useContext(IdContext); 
   const [localLikes, setLocalLikes] = useState(0);
   const [localDislikes, setLocalDislikes] = useState(0);
   const [userReaction, setUserReaction] = useState(null);
@@ -100,7 +99,7 @@ function RecipeDetailPage() {
     const fetchComments = async () => {
       if (recipeId) {
         try {
-          const res = await api.get(`/recipes/${recipeId}/comments`, { signal: controller.signal }); // Αφαιρέθηκε το /api
+          const res = await api.get(`/recipes/${recipeId}/comments`, { signal: controller.signal }); 
           setComments(res.data);
         } catch (err) {
           if (err.name !== 'CanceledError') {
@@ -114,7 +113,7 @@ function RecipeDetailPage() {
     return () => {
       controller.abort();
     };
-  }, [recipeId, currentUserId]); // Προσθήκη currentUserId στις εξαρτήσεις για να ξανατρέξει αν αλλάξει
+  }, [recipeId, currentUserId]); 
 
   // useEffect για την αρχικοποίηση των τοπικών likes/dislikes/userReaction όταν το recipe φορτωθεί/αλλάξει
   useEffect(() => {
@@ -132,11 +131,11 @@ function RecipeDetailPage() {
       return;
     }
     try {
-      const response = await api.post(`/recipes/${recipeId}/comments`, { // Αφαιρέθηκε το /api
+      const response = await api.post(`/recipes/${recipeId}/comments`, { 
         userId: currentUserId,
-        commentText: newCommentText // Το backend περιμένει commentText
+        commentText: newCommentText 
       });
-      setComments(prevComments => [response.data, ...prevComments]); // Προσθήκη νέου σχολίου στην αρχή
+      setComments(prevComments => [response.data, ...prevComments]); 
       setNewCommentText(''); // Καθαρισμός πεδίου
     } catch (err) {
       console.error("Error posting comment:", err);
@@ -144,7 +143,6 @@ function RecipeDetailPage() {
     }
   };
 
-  // Λογική για τα reactions, παρόμοια με το PostCard
   const handleReaction = async (reactionType) => {
     if (!currentUserId) {
       alert("Πρέπει να είστε συνδεδεμένος για να κάνετε like/dislike.");
@@ -238,7 +236,7 @@ function RecipeDetailPage() {
     const token = sessionStorage.getItem('authToken');
     if (!recipe || !recipe.id) return;
     try {
-      await api.post(`/recipes/${recipe.id}/report`, reportData, { // Endpoint για αναφορά συνταγής
+      await api.post(`/recipes/${recipe.id}/report`, reportData, { 
         headers: { Authorization: `Bearer ${token}` }
       });
       alert('Recipe report submitted successfully. Thank you.');
@@ -249,11 +247,10 @@ function RecipeDetailPage() {
     }
   };
 
-
   // Συνάρτηση για την εναλλαγή και φόρτωση (mock) διατροφικών πληροφοριών
   const handleToggleNutritionInfo = async () => {
-    if (!showNutritionInfo) { // Αν πρόκειται να εμφανιστούν
-      if (!nutritionalData && recipe && ingredientsList && ingredientsList.length > 0) { // Και τα δεδομένα δεν έχουν φορτωθεί ήδη
+    if (!showNutritionInfo) { 
+      if (!nutritionalData && recipe && ingredientsList && ingredientsList.length > 0) { 
         setNutritionLoading(true);
         setNutritionError(null);
         try {
@@ -261,7 +258,7 @@ function RecipeDetailPage() {
           // Σε πραγματική εφαρμογή, εδώ θα γινόταν κλήση σε API
           // console.log("[RecipeDetailPage] Mock fetching nutritional data for:", ingredientsList);
           const mockData = ingredientsList.map(ingredient => ({
-            name: ingredient, // Τα στοιχεία του ingredientsList είναι ήδη strings
+            name: ingredient, 
             calories: (Math.random() * 180 + 40).toFixed(0), // Τυχαίες θερμίδες
             protein: (Math.random() * 15 + 1).toFixed(1),  // Τυχαία πρωτεΐνη
             carbs: (Math.random() * 25 + 3).toFixed(1),    // Τυχαίοι υδατάνθρακες
@@ -308,10 +305,9 @@ function RecipeDetailPage() {
   let ingredientsList = [];
   if (recipe.ingredients) {
     try {
-      ingredientsList = JSON.parse(recipe.ingredients); // Κάνε parse το JSON string
+      ingredientsList = JSON.parse(recipe.ingredients); 
     } catch (e) {
       console.error("Failed to parse ingredients JSON:", e, recipe.ingredients);
-      // Fallback αν δεν είναι έγκυρο JSON, αν και ιδανικά θα έπρεπε πάντα να είναι
       ingredientsList = recipe.ingredients.split(',').map(ing => ing.trim()); 
     }
   }
@@ -320,7 +316,6 @@ function RecipeDetailPage() {
     <div className="recipe-detail-page">
       <Link to="/home" className="back-link">← Επιστροφή στην Αρχική</Link>
 
-      {/* Εμφάνιση εικόνας προφίλ και ονόματος χρήστη του δημιουργού */}
       {recipe.user_id && (
         <div className="recipe-author-container">
           <img
@@ -342,7 +337,6 @@ function RecipeDetailPage() {
       )}
       <h1 className="recipe-title-full">{recipe.title}</h1>
 
-      {/* Ενότητα Reactions κάτω από τον τίτλο */}
       <div className="recipe-detail-actions">
         {/* Like Button */}
         <button
@@ -481,7 +475,6 @@ function RecipeDetailPage() {
           itemId={reportingCommentId}
         />
       )}
-
       {/* Modal για Αναφορά Συνταγής */}
       {showReportRecipeModal && recipe && recipe.id && (
         <ReportModal

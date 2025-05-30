@@ -1,5 +1,5 @@
-/* === Ορισμός Μεταβλητών για την Κάρτα (μπορούν να είναι και στο :root) === */
-:root { /* Ή μπορείς να τα ορίσεις σε ένα πιο γενικό αρχείο CSS */
+
+:root { 
   --postcard-bg-color: #f7d2a7;
   --postcard-border-radius: 16px;
   --postcard-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
@@ -75,8 +75,6 @@
   margin-bottom: 12px;
 }
 
-/* Σημείωση: Αυτός ο κανόνας μπορεί να μην εφαρμόζεται στην τρέχουσα δομή JSX του PostCard,
-   καθώς το span των σχολίων είναι το τελευταίο παιδί. */
 .post-meta span:not(:last-child)::after {
   content: "|";
   margin-left: 10px;
@@ -131,18 +129,18 @@
 
 /* === Πληροφορίες Συγγραφέα (Πάνω από την εικόνα) === */
 .post-author-container {
-  display: flex; /* Για να είναι η εικόνα και το όνομα στην ίδια γραμμή */
-  align-items: center; /* Στοίχιση κάθετα στο κέντρο */
-  padding: calc(var(--postcard-padding) / 2) calc(var(--postcard-padding) * 0.625); /* Παράδειγμα χρήσης calc */
-  gap: 8px; /* Κενό μεταξύ εικόνας και ονόματος */
+  display: flex; 
+  align-items: center; 
+  padding: calc(var(--postcard-padding) / 2) calc(var(--postcard-padding) * 0.625); 
+  gap: 8px; 
 }
 
 .author-profile-pic {
-  width: 30px; /* Ορισμός πλάτους */
-  height: 30px; /* Ορισμός ύψους */
-  border-radius: 50%; /* Για στρογγυλή εικόνα */
-  object-fit: cover; /* Διασφαλίζει ότι η εικόνα καλύπτει τον χώρο χωρίς παραμόρφωση */
-  border: 1px solid #ddd; /* Προαιρετικό περίγραμμα */
+  width: 30px; 
+  height: 30px; 
+  border-radius: 50%; 
+  object-fit: cover; 
+  border: 1px solid #ddd; 
 }
 
 .post-author {
@@ -155,24 +153,24 @@
 /* === Report Button === */
 .postcard-report-button {
   position: absolute;
-  top: 12px; /* Προσαρμόστε ανάλογα με το padding του post-author-container */
+  top: 12px; 
   right: 12px;
   background-color: transparent;
   border: none;
   padding: 6px;
   cursor: pointer;
-  border-radius: 50%; /* Κάνει το κουμπί κυκλικό */
-  display: inline-flex; /* Βοηθά στην ευθυγράμμιση του εικονιδίου */
+  border-radius: 50%; 
+  display: inline-flex; 
   align-items: center;
   justify-content: center;
-  z-index: 5; /* Εξασφαλίζει ότι είναι πάνω από άλλο περιεχόμενο αν χρειαστεί */
+  z-index: 5; 
   transition: background-color 0.2s ease;
 }
 
 .postcard-report-button img {
-  width: 22px; /* Προσαρμόστε το μέγεθος όπως χρειάζεται */
+  width: 22px; 
   height: 22px;
-  display: block; /* Αποτρέπει επιπλέον κενό κάτω από την εικόνα */
+  display: block; 
 }
 
 .postcard-report-button:hover {

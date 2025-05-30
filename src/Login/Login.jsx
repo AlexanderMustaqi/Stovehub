@@ -48,7 +48,7 @@ function Login() {
         setLoginFlag(!login_flag);
     }
 
-    const handleLoginSubmit = async (e) => { // Μετονομασία για αποφυγή σύγκρουσης με το contextHandleLogin εεε
+    const handleLoginSubmit = async (e) => { 
         e.preventDefault();
         const email = emailRef.current.value;
         const password = passwordRef.current.value;
@@ -78,7 +78,6 @@ function Login() {
             email: email,
             password: password
         }
-        //send data to server to POST new user as Registered
         const postData = async (ClientRequest) => {
             try {
                 const ServerResponse = await api.post('/postRegisteredUser', ClientRequest);
